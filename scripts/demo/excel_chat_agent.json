@@ -1,0 +1,124 @@
+{
+  "id": "excel-chat-demo",
+  "name": "Excel 数据助理 / Excel chat agent",
+  "description": "工作区里的表格/文档资料，用对话来查。演示 files 能力包 + 会话层 + 导出独立 agent。",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "start",
+      "type": "start",
+      "label": "开始 / Start",
+      "description": "接收对话消息与历史；两者都是普通输入，画布运行时也可以直接给。",
+      "position": {
+        "x": 0.0,
+        "y": 120.0
+      },
+      "config": {
+        "input_schema": {
+          "message": "工作区里有哪些文件？",
+          "history": ""
+        }
+      },
+      "ui": {
+        "parent_id": null,
+        "width": null,
+        "height": null,
+        "collapsed": false,
+        "note": ""
+      },
+      "trusted": false
+    },
+    {
+      "id": "assistant",
+      "type": "agent",
+      "label": "数据助理 / Data assistant",
+      "description": "先看工作区有什么文件，再按需读取表格/文档回答。",
+      "position": {
+        "x": 360.0,
+        "y": 120.0
+      },
+      "config": {
+        "system_prompt": "You are a data assistant. The user's uploaded files live in your workspace. When a question refers to data, first use file_list to see what is there, then read the relevant file with excel_read / csv_read / docx_read / pdf_read before answering. Never guess numbers you have not read. If a file is ambiguous, list the candidates and ask which one. Answer in the user's language, concisely. When a total or any other arithmetic is needed, call the calculator tool and use its result; never compute sums in your head.",
+        "task": "Conversation so far:\n{{ history }}\n\nUser message:\n{{ message }}",
+        "tools": [
+          "file_list",
+          "file_read",
+          "excel_read",
+          "csv_read",
+          "docx_read",
+          "pdf_read",
+          "excel_write",
+          "csv_write",
+          "file_write",
+          "calculator"
+        ],
+        "max_iterations": 8,
+        "temperature": 0.0
+      },
+      "ui": {
+        "parent_id": null,
+        "width": null,
+        "height": null,
+        "collapsed": false,
+        "note": ""
+      },
+      "trusted": false
+    },
+    {
+      "id": "end",
+      "type": "end",
+      "label": "回答 / Answer",
+      "description": "",
+      "position": {
+        "x": 720.0,
+        "y": 120.0
+      },
+      "config": {
+        "output_label": "answer"
+      },
+      "ui": {
+        "parent_id": null,
+        "width": null,
+        "height": null,
+        "collapsed": false,
+        "note": ""
+      },
+      "trusted": false
+    }
+  ],
+  "edges": [
+    {
+      "id": "start->assistant",
+      "source": "start",
+      "source_handle": "out",
+      "target": "assistant",
+      "target_handle": "in",
+      "label": "消息与历史 / message + history",
+      "type": "smoothstep"
+    },
+    {
+      "id": "assistant->end",
+      "source": "assistant",
+      "source_handle": "out",
+      "target": "end",
+      "target_handle": "in",
+      "label": "回答 / answer",
+      "type": "smoothstep"
+    }
+  ],
+  "viewport": {
+    "x": 0.0,
+    "y": 0.0,
+    "zoom": 1.0
+  },
+  "state_schema": [
+    {
+      "name": "vars",
+      "type": "json",
+      "reducer": "merge_dict",
+      "default": {},
+      "description": "Every node writes its output here under its own node id."
+    }
+  ],
+  "tools": {}
+}

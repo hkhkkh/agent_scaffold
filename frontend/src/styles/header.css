@@ -1,0 +1,255 @@
+/* Header, shell chrome, and the crash fallback.
+   Layout of `.app`, `.app-header`, `.app-body`, `.app-side` lives in base.css —
+   this file only adds the pieces those rules do not cover. */
+
+/* --------------------------------------------------------------------------
+   Brand + dividers
+   -------------------------------------------------------------------------- */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.brand__name {
+  font-size: var(--text-sm);
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.header__divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Workflow name + save state
+   -------------------------------------------------------------------------- */
+
+.header__name {
+  width: 260px;
+  height: 28px;
+  padding: 0 var(--space-2);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-md);
+  font-weight: 500;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.header__name:hover {
+  background: var(--bg-input);
+}
+
+.header__name:focus {
+  outline: none;
+  background: var(--bg-input);
+  border-color: var(--border-focus);
+}
+
+.header__name::placeholder {
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
+.header__state {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--text-dim);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.header__state--dirty {
+  color: var(--warning);
+}
+
+/* --------------------------------------------------------------------------
+   AI assistance mode
+
+   A segmented control rather than one switch, because the two states have to be
+   readable at a glance: "the machine is working on my document right now" is not
+   something to discover from the position of a knob.
+   -------------------------------------------------------------------------- */
+
+.assist-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--bg-input);
+  flex-shrink: 0;
+}
+
+.assist-toggle__option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-dim);
+  font-size: var(--text-xs);
+  line-height: 18px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.assist-toggle__option:hover {
+  color: var(--text);
+}
+
+.assist-toggle__option.is-active {
+  background: var(--accent-subtle);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Right panel: tabs above a scrolling body
+   -------------------------------------------------------------------------- */
+
+.app-side__tabs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.app-side__tabs .tabs {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-side__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+}
+
+.tab__count {
+  min-width: 16px;
+  padding: 0 4px;
+  border-radius: var(--radius-full);
+  background: var(--bg-hover);
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 15px;
+  text-align: center;
+}
+
+.tab--active .tab__count {
+  background: var(--accent-subtle);
+  color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   Banner over the canvas
+   -------------------------------------------------------------------------- */
+
+.banner {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  right: var(--space-3);
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow);
+  font-size: var(--text-sm);
+}
+
+.banner--error {
+  border-color: var(--danger);
+  background: var(--danger-subtle);
+  color: #fecaca;
+}
+
+/* --------------------------------------------------------------------------
+   Hint bar
+   -------------------------------------------------------------------------- */
+
+.app-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 24px;
+  padding: 0 var(--space-3);
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: var(--text-xs);
+  flex-shrink: 0;
+}
+
+.app-hint > .mono {
+  margin-left: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Crash fallback (see ErrorBoundary in main.tsx)
+   -------------------------------------------------------------------------- */
+
+.crash {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 860px;
+  height: 100%;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6);
+}
+
+.crash__title {
+  margin: 0;
+  font-size: var(--text-xl);
+}
+
+.crash__message {
+  margin: 0;
+  color: var(--danger);
+}
+
+.crash__stack {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: var(--space-3);
+  overflow: auto;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  white-space: pre-wrap;
+}

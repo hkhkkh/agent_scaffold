@@ -1,0 +1,2196 @@
+/**
+ * Visual refresh layer.
+ *
+ * Why a layer instead of editing every component stylesheet:
+ *
+ * The app shipped dark-first with ~4.7k lines of component CSS written against
+ * the old token set. The refresh changes the *language* (softer light default,
+ * deeper dark option, larger radii, card-based panels, clearer node cards) in
+ * one place that is imported last, so it can be reviewed as a diff and reverted
+ * by deleting one import. Component selectors are reused deliberately — the
+ * markup is the public surface and did not need to be rewritten to look better.
+ *
+ * Rules loaded later with equal specificity win, which is how the overrides
+ * below replace values from `components.css` / `canvas.css` / `header.css`.
+ */
+
+/* ==========================================================================
+   1. Shell & header
+   ========================================================================== */
+
+body {
+  background: var(--bg-app);
+  color: var(--text);
+  letter-spacing: -0.004em;
+}
+
+* {
+  scrollbar-color: var(--scrollbar) transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--scrollbar);
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--text-dim);
+  background-clip: content-box;
+}
+
+::selection {
+  background: var(--accent-subtle);
+  color: var(--text);
+}
+
+.app-header {
+  height: var(--header-height);
+  gap: var(--space-2);
+  padding: 0 var(--space-3);
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
+}
+
+.app-body {
+  gap: 0;
+}
+
+.app-main {
+  isolation: isolate;
+}
+
+/* A soft two-tone glow behind the dot grid. It gives the canvas depth without
+   competing with the node colours, and it is pure decoration (no pointer
+   events, no layout impact). */
+.app-main::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(920px 460px at 14% -8%, var(--canvas-glow-a), transparent 70%),
+    radial-gradient(780px 420px at 88% 108%, var(--canvas-glow-b), transparent 72%);
+}
+
+.app-hint {
+  height: var(--hint-height);
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 11.5px;
+}
+
+/* ---- brand ---- */
+
+.brand {
+  gap: var(--space-2);
+  padding: 3px 10px 3px 4px;
+  border-radius: var(--radius-md);
+  color: var(--accent);
+  transition: background var(--transition);
+}
+
+.brand:hover {
+  background: var(--bg-hover);
+}
+
+.brand svg {
+  box-sizing: content-box;
+  width: 17px;
+  height: 17px;
+  padding: 5px;
+  border-radius: var(--radius-sm);
+  color: #fff;
+  background: var(--accent-gradient);
+  box-shadow: var(--shadow-accent);
+}
+
+.brand__name {
+  font-size: var(--text-base);
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  color: var(--text);
+}
+
+.header__divider {
+  height: 22px;
+  background: var(--border);
+}
+
+/* ---- view switcher ---- */
+
+.app-header .tabs {
+  gap: 2px;
+  padding: 3px;
+  height: 34px;
+  align-items: center;
+  flex: 0 0 auto;
+  background: var(--bg-input);
+  border-radius: var(--radius-full);
+}
+
+.app-header .tab {
+  flex: 0 0 auto;
+  height: 28px;
+  padding: 0 14px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.app-header .tab:hover {
+  color: var(--text);
+}
+
+.app-header .tab--active {
+  background: var(--bg-raised);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ---- workflow name ---- */
+
+.header__name {
+  width: 300px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: var(--radius);
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+
+.header__name:hover {
+  background: var(--bg-input);
+}
+
+.header__name:focus {
+  background: var(--bg-input);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+
+.header__state {
+  color: var(--text-dim);
+  font-size: var(--text-xs);
+}
+
+/* ---- assist segmented control ---- */
+
+.assist-toggle {
+  height: 34px;
+  padding: 3px;
+  gap: 2px;
+  background: var(--bg-input);
+  border: 1px solid transparent;
+}
+
+.assist-toggle__option {
+  height: 26px;
+  padding: 0 10px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.assist-toggle__option:hover {
+  color: var(--text);
+}
+
+.assist-toggle__option.is-active {
+  background: var(--bg-raised);
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+.header__lang {
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   2. Primitives: buttons, fields, tabs, badges, dialogs
+   ========================================================================== */
+
+.btn {
+  height: 32px;
+  padding: 0 13px;
+  gap: 7px;
+  border-radius: var(--radius);
+  border-color: var(--border);
+  background: var(--bg-panel);
+  color: var(--text);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  box-shadow: var(--shadow-sm);
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition),
+    transform var(--transition);
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--bg-hover);
+  border-color: var(--border-strong);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  box-shadow: none;
+}
+
+.btn--primary {
+  background: var(--accent);
+  border-color: transparent;
+  color: var(--accent-text);
+  font-weight: 600;
+  box-shadow: var(--shadow-accent);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: transparent;
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  color: var(--text-muted);
+}
+
+.btn--ghost:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.btn--danger {
+  box-shadow: none;
+  background: transparent;
+}
+
+.btn--icon {
+  width: 32px;
+  padding: 0;
+}
+
+.btn--sm {
+  height: 26px;
+  padding: 0 var(--space-2);
+  font-size: var(--text-xs);
+}
+
+.btn--icon.btn--sm {
+  width: 26px;
+}
+
+.header__lang.btn {
+  box-shadow: none;
+  border-color: transparent;
+  background: transparent;
+}
+
+.header__lang.btn:hover {
+  background: var(--bg-hover);
+}
+
+/* ---- fields ---- */
+
+.field__label {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.field__hint {
+  color: var(--text-dim);
+}
+
+.input,
+.textarea,
+.select {
+  padding: 7px 10px;
+  border-radius: var(--radius);
+  border-color: var(--border);
+  background: var(--bg-input);
+  font-size: var(--text-sm);
+}
+
+.input:hover,
+.textarea:hover,
+.select:hover {
+  border-color: var(--border-strong);
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+
+.select {
+  background-position: right 9px center;
+}
+
+.checkbox input {
+  accent-color: var(--accent);
+}
+
+/* ---- tabs (panel-level) ---- */
+
+.tabs {
+  padding: 3px;
+  gap: 2px;
+  border-radius: var(--radius-md);
+  background: var(--bg-input);
+}
+
+.tab {
+  padding: 5px var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.tab--active {
+  background: var(--bg-raised);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+.tab__count {
+  background: var(--bg-hover);
+  color: var(--text-muted);
+}
+
+.tab--active .tab__count {
+  background: var(--accent-subtle);
+  color: var(--accent);
+}
+
+/* ---- badges ---- */
+
+.badge {
+  height: 20px;
+  padding: 0 8px;
+  border-radius: var(--radius-full);
+  background: var(--bg-hover);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.badge--success {
+  background: var(--success-subtle);
+  color: var(--success);
+}
+.badge--warning {
+  background: var(--warning-subtle);
+  color: var(--warning);
+}
+.badge--danger {
+  background: var(--danger-subtle);
+  color: var(--danger);
+}
+.badge--info {
+  background: var(--info-subtle);
+  color: var(--info);
+}
+.badge--accent {
+  background: var(--accent-subtle);
+  color: var(--accent);
+}
+
+/* ---- callouts ---- */
+
+.callout {
+  border-radius: var(--radius-md);
+  border-color: var(--border);
+  background: var(--bg-input);
+  padding: 10px 12px;
+}
+
+.callout--error {
+  background: var(--danger-subtle);
+  border-color: color-mix(in srgb, var(--danger) 35%, transparent);
+  color: var(--danger);
+}
+.callout--warning {
+  background: var(--warning-subtle);
+  border-color: color-mix(in srgb, var(--warning) 35%, transparent);
+  color: var(--warning);
+}
+.callout--info {
+  background: var(--info-subtle);
+  border-color: color-mix(in srgb, var(--info) 35%, transparent);
+  color: var(--info);
+}
+.callout--success {
+  background: var(--success-subtle);
+  border-color: color-mix(in srgb, var(--success) 35%, transparent);
+  color: var(--success);
+}
+.callout--muted {
+  color: var(--text-muted);
+}
+
+/* ---- dialogs ---- */
+
+.dialog-backdrop {
+  background: var(--bg-overlay);
+  backdrop-filter: blur(6px);
+}
+
+.dialog {
+  max-width: 600px;
+  border-radius: var(--radius-xl);
+  border-color: var(--border);
+  background: var(--bg-panel);
+  box-shadow: var(--shadow-lg);
+}
+
+.dialog--wide {
+  max-width: 820px;
+}
+
+.dialog__header {
+  padding: 16px 20px;
+  border-bottom-color: var(--border);
+}
+
+.dialog__title {
+  font-size: var(--text-md);
+  font-weight: 650;
+}
+
+.dialog__body {
+  padding: 20px;
+}
+
+.dialog__footer {
+  padding: 14px 20px;
+  background: var(--bg-input);
+  border-top-color: var(--border);
+}
+
+/* ---- panels & shell sides ---- */
+
+.app-side {
+  background: var(--bg-panel);
+  border-color: var(--border);
+}
+
+.app-side--left {
+  box-shadow: 1px 0 0 var(--border);
+}
+
+.app-side__head {
+  padding: 10px 12px;
+  border-bottom-color: var(--border);
+}
+
+.app-side__title {
+  font-size: var(--text-xs);
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--text-muted);
+}
+
+.app-side__tabs {
+  padding: 8px 10px;
+  border-bottom-color: var(--border);
+}
+
+.app-side__rail {
+  background: transparent;
+}
+
+.app-side__rail:hover {
+  background: var(--bg-hover);
+}
+
+.panel__header {
+  padding: 12px;
+  border-bottom-color: var(--border);
+}
+
+.panel__title {
+  font-size: var(--text-xs);
+  text-transform: none;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+}
+
+.section-label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
+/* ---- misc ---- */
+
+.divider {
+  background: var(--border);
+}
+
+.kbd {
+  background: var(--bg-input);
+  border-color: var(--border);
+  color: var(--text-muted);
+}
+
+.spinner {
+  border-color: var(--border-strong);
+  border-top-color: var(--accent);
+}
+
+.empty {
+  color: var(--text-dim);
+}
+
+/* ==========================================================================
+   3. Canvas
+   ========================================================================== */
+
+.react-flow {
+  background: transparent;
+}
+
+.react-flow__background {
+  opacity: 1;
+}
+
+.react-flow__background circle {
+  fill: var(--canvas-dot) !important;
+}
+
+.react-flow__background rect {
+  fill: transparent !important;
+}
+
+.react-flow__pane {
+  cursor: default;
+}
+
+.canvas--dropping::after {
+  border: 2px dashed var(--accent);
+  border-radius: var(--radius-xl);
+  background: var(--accent-subtle);
+  inset: 10px;
+}
+
+/* ==========================================================================
+   4. Node cards
+   ========================================================================== */
+
+.node {
+  width: 268px;
+  padding: 15px 14px 14px;
+  background: var(--node-bg);
+  border: 1px solid var(--node-border);
+  border-left: 1px solid var(--node-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--node-shadow);
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition),
+    transform var(--transition),
+    opacity var(--transition),
+    filter var(--transition);
+}
+
+/* Category accent as a top edge: visible at a glance, but not a coloured
+   border that fights the card's own outline. */
+.node::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: calc(var(--radius-lg) - 1px) calc(var(--radius-lg) - 1px) 0 0;
+  background: linear-gradient(
+    90deg,
+    var(--node-color, #64748b),
+    color-mix(in srgb, var(--node-color, #64748b) 45%, transparent)
+  );
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+.node:hover {
+  border-color: var(--node-border-hover);
+  box-shadow: var(--node-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.node--selected {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 3px var(--node-selected-ring),
+    var(--node-shadow-hover);
+}
+
+.react-flow__node.node-relation--related .node {
+  border-color: var(--accent-line);
+  box-shadow:
+    0 0 0 1px var(--accent-line),
+    0 0 26px var(--accent-subtle),
+    var(--node-shadow);
+}
+
+.react-flow__node.node-relation--neighbor .node {
+  border-color: color-mix(in srgb, var(--warning) 45%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--warning) 30%, transparent),
+    0 0 22px var(--warning-subtle),
+    var(--node-shadow);
+}
+
+.react-flow__node.node--dimmed .node {
+  opacity: 0.32;
+  filter: saturate(0.4);
+}
+
+.node--running {
+  border-color: var(--info);
+  animation: node-breathe 1.8s ease-in-out infinite;
+}
+
+@keyframes node-breathe {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px var(--info-subtle),
+      var(--node-shadow-hover);
+  }
+  50% {
+    box-shadow:
+      0 0 0 5px color-mix(in srgb, var(--info) 12%, transparent),
+      0 0 30px color-mix(in srgb, var(--info) 18%, transparent),
+      var(--node-shadow-hover);
+  }
+}
+
+.node--succeeded {
+  border-color: color-mix(in srgb, var(--success) 55%, var(--node-border));
+}
+
+.node--failed {
+  border-color: var(--danger);
+  box-shadow:
+    0 0 0 2px var(--danger-subtle),
+    var(--node-shadow-hover);
+}
+
+/* ---- header ---- */
+
+.node__header {
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.node__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border-radius: 9px;
+  color: var(--node-color, #64748b);
+  background: color-mix(in srgb, var(--node-color, #64748b) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--node-color, #64748b) 26%, transparent);
+}
+
+.node__icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.node__title {
+  padding: 3px 4px;
+  font-size: var(--text-base);
+  font-weight: 650;
+  color: var(--node-heading);
+}
+
+.node__title:hover {
+  border-color: var(--border);
+}
+
+.node__title:focus {
+  border-color: var(--border-focus);
+  background: var(--bg-input);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+
+/* ---- meta ---- */
+
+.node__meta {
+  gap: 8px;
+  margin: 0 0 9px 38px;
+}
+
+.node__type {
+  margin: 0;
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  color: var(--node-color, var(--text-dim));
+  background: color-mix(in srgb, var(--node-color, #64748b) 11%, transparent);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.node__output {
+  margin-left: auto;
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  background: var(--bg-input);
+  color: var(--text-dim);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.node__output--empty {
+  background: var(--warning-subtle);
+  color: var(--warning);
+}
+
+/* ---- the description is the primary content ---- */
+
+.node__description {
+  min-height: 56px;
+  padding: 9px 10px;
+  border-radius: var(--radius-md);
+  border-color: var(--border);
+  background: var(--bg-input);
+  color: var(--text-muted);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.node__description:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.node__description--empty {
+  color: var(--text-dim);
+}
+
+.node__description--editing {
+  color: var(--text);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+
+.node__stream {
+  border-radius: var(--radius-md);
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.node__flags {
+  margin-top: 9px;
+}
+
+.node__assist {
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+}
+
+.node__status {
+  width: 18px;
+  height: 18px;
+}
+
+.node__status--ok {
+  background: var(--success-subtle);
+}
+
+.node__status--fail {
+  background: var(--danger-subtle);
+}
+
+/* ==========================================================================
+   5. Ports
+   ========================================================================== */
+
+.node__port-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-dim);
+  letter-spacing: 0.01em;
+}
+
+.node__ports--in .node__port-label {
+  padding-left: 12px;
+}
+
+.node__ports--out .node__port-label {
+  padding-right: 12px;
+}
+
+.react-flow__handle.port {
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--bg-panel);
+  box-shadow: 0 0 0 1px var(--border);
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
+}
+
+.react-flow__handle.port:hover {
+  transform: scale(1.35);
+  box-shadow:
+    0 0 0 1px var(--border),
+    0 0 0 4px var(--accent-subtle);
+}
+
+.react-flow__handle.port[data-required='true'] {
+  border-color: var(--warning);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--warning) 60%, transparent);
+}
+
+.react-flow__handle-left.port {
+  left: -6px;
+}
+
+.react-flow__handle-right.port {
+  right: -6px;
+}
+
+/* ==========================================================================
+   6. Edges
+   ========================================================================== */
+
+.react-flow__edge-path {
+  stroke: var(--edge);
+  stroke-width: 1.8;
+  transition: stroke var(--transition);
+}
+
+.react-flow__edge:hover .react-flow__edge-path {
+  stroke: var(--edge-hover);
+  stroke-width: 2.2;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--edge-hover);
+  stroke-width: 2.4;
+}
+
+.react-flow__edge.edge--incident .react-flow__edge-path {
+  stroke: var(--accent);
+  stroke-width: 2.2;
+}
+
+.react-flow__edge.edge--dimmed .react-flow__edge-path {
+  opacity: 0.18;
+}
+
+.react-flow__edge.edge--flowing .react-flow__edge-path {
+  stroke: var(--edge-flow);
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--edge-flow) 70%, transparent));
+}
+
+.react-flow__edge.edge--loop-back .react-flow__edge-path {
+  stroke: var(--edge);
+  stroke-dasharray: 5 5;
+  stroke-width: 1.3;
+  opacity: 0.5;
+}
+
+.react-flow__edge.edge--loop-back:hover .react-flow__edge-path {
+  opacity: 0.85;
+  stroke: color-mix(in srgb, var(--warning) 80%, var(--edge));
+}
+
+.react-flow__edge.edge--loop-back.selected .react-flow__edge-path,
+.react-flow__edge.edge--loop-back.edge--flowing .react-flow__edge-path {
+  stroke: var(--warning);
+  opacity: 1;
+}
+
+.loop-edge-label {
+  background: var(--bg-panel);
+  border-color: color-mix(in srgb, var(--warning) 45%, transparent);
+  color: var(--warning);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+}
+
+.react-flow__edge-text {
+  fill: var(--text-muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.react-flow__edge-textbg {
+  fill: var(--bg-panel);
+}
+
+.react-flow__connection-path {
+  stroke: var(--accent);
+  stroke-width: 2.2;
+  stroke-dasharray: 6 4;
+}
+
+/* ==========================================================================
+   7. React Flow chrome: controls, minimap, attribution
+   ========================================================================== */
+
+.react-flow__controls {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  margin: 0 0 16px 16px;
+}
+
+.react-flow__controls-button {
+  width: 30px;
+  height: 30px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  fill: var(--text-muted);
+}
+
+.react-flow__controls-button:last-child {
+  border-bottom: none;
+}
+
+.react-flow__controls-button:hover {
+  background: var(--bg-hover);
+  fill: var(--text);
+}
+
+.react-flow__minimap {
+  width: 176px;
+  height: 112px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  /* Bottom-left, beside the zoom controls: the bottom-right corner is where
+     nodes carry their outputs, and a floating map there covered them. */
+  margin: 0 0 16px 58px;
+  opacity: 0.92;
+}
+
+.react-flow__minimap:hover {
+  opacity: 1;
+}
+
+.react-flow__minimap-mask {
+  fill: var(--canvas-mask);
+}
+
+.react-flow__attribution {
+  display: none;
+}
+
+/* ==========================================================================
+   8. Empty canvas: welcome card + scenario cards
+   ========================================================================== */
+
+.canvas__welcome {
+  max-width: 620px;
+  gap: var(--space-3);
+  padding: 34px 32px 28px;
+  text-align: center;
+  color: var(--text-muted);
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius-xl) + 4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.canvas__welcome strong {
+  font-size: var(--text-xl);
+  font-weight: 680;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.canvas__welcome span {
+  max-width: 440px;
+  font-size: var(--text-sm);
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+.canvas__welcome-try {
+  margin-top: var(--space-1);
+  color: var(--text-dim);
+  font-size: var(--text-xs);
+  letter-spacing: 0.02em;
+}
+
+.canvas__scenarios {
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.scenario-card {
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-input);
+  transition:
+    border-color var(--transition),
+    background var(--transition),
+    transform var(--transition),
+    box-shadow var(--transition);
+}
+
+.scenario-card:hover {
+  border-color: var(--accent-line);
+  background: var(--bg-panel);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.scenario-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 2px;
+  border-radius: var(--radius-md);
+  color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+.scenario-card__title {
+  font-size: var(--text-sm);
+  font-weight: 650;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.scenario-card__go {
+  font-size: 11.5px;
+  color: var(--text-dim);
+}
+
+.scenario-card:hover .scenario-card__go {
+  color: var(--accent);
+}
+
+/* ==========================================================================
+   9. Palette
+   ========================================================================== */
+
+.palette {
+  background: var(--bg-panel);
+}
+
+.palette__search {
+  padding: 12px;
+  border-bottom: none;
+}
+
+.input.palette__search-input {
+  height: 36px;
+  padding-left: 32px;
+  border-radius: var(--radius-md);
+}
+
+.palette__search-icon {
+  left: calc(var(--space-3) + 10px);
+}
+
+.palette__list {
+  padding: 0 0 6px;
+}
+
+.palette__group {
+  margin-bottom: 2px;
+}
+
+.palette__group-header {
+  padding: 12px 14px 5px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+
+.palette__group-header:hover {
+  color: var(--text-muted);
+}
+
+.palette__count {
+  opacity: 0.8;
+  font-weight: 500;
+}
+
+.palette__items {
+  padding: 2px 10px 4px;
+  gap: 3px;
+}
+
+.palette__item {
+  gap: 10px;
+  padding: 8px 9px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  align-items: flex-start;
+}
+
+.palette__item:hover {
+  background: var(--bg-hover);
+  border-color: var(--border);
+}
+
+.palette__item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-top: 0;
+  border-radius: 9px;
+  color: var(--node-color, #64748b);
+  background: color-mix(in srgb, var(--node-color, #64748b) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--node-color, #64748b) 24%, transparent);
+}
+
+.palette__item-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.palette__item-text {
+  gap: 2px;
+}
+
+.palette__item-label {
+  gap: 6px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.palette__item-description {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--text-dim);
+}
+
+.palette__item-flag {
+  font-size: 9px;
+  padding: 0 5px;
+  border-radius: var(--radius-full);
+}
+
+.palette__footer {
+  padding: 9px 14px;
+  border-top-color: var(--border);
+  color: var(--text-dim);
+}
+
+/* ==========================================================================
+   10. Canvas overlays: run strip, issues, legend
+   ========================================================================== */
+
+.canvas__run {
+  gap: 10px;
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius-full);
+}
+
+.canvas__run-link {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.canvas__issues {
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  border-color: color-mix(in srgb, var(--danger) 35%, transparent);
+  background: var(--bg-panel);
+  box-shadow: var(--shadow);
+}
+
+.canvas__issues-jump {
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+}
+
+.canvas__issues-fix {
+  border-color: var(--accent-line);
+}
+
+.legend {
+  gap: 10px;
+}
+
+.legend__toggle {
+  padding: 5px 12px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-muted);
+  border-radius: var(--radius-full);
+  font-size: 11.5px;
+}
+
+.legend__list {
+  gap: 8px 14px;
+  padding: 10px 14px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+}
+
+.legend__list li {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.legend__dot {
+  width: 8px;
+  height: 8px;
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+/* ==========================================================================
+   11. Right panel: AI copilot
+   ========================================================================== */
+
+.copilot {
+  background: var(--bg-panel);
+}
+
+.copilot__header {
+  gap: var(--space-2);
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.copilot__title {
+  font-size: var(--text-sm);
+  font-weight: 650;
+  color: var(--text);
+}
+
+.copilot__messages {
+  gap: 14px;
+  padding: 16px 14px;
+}
+
+.copilot-msg {
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  line-height: 1.65;
+}
+
+.copilot-msg--assistant {
+  padding: 12px 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+}
+
+.copilot-msg--user {
+  background: var(--accent-subtle);
+  border: 1px solid var(--accent-line);
+  color: var(--text);
+}
+
+.copilot-msg--status {
+  color: var(--text-muted);
+  background: transparent;
+}
+
+.copilot-msg--error {
+  background: var(--danger-subtle);
+  border-color: color-mix(in srgb, var(--danger) 35%, transparent);
+  color: var(--danger);
+}
+
+.copilot-msg--report {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+}
+
+.copilot-card {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
+}
+
+.copilot-card--plan {
+  border-color: var(--accent-line);
+  background: var(--accent-subtle);
+}
+
+.copilot-card--report {
+  border-color: var(--border);
+}
+
+.copilot-card__header {
+  border-bottom-color: var(--border);
+}
+
+.copilot-chip {
+  border-radius: var(--radius-full);
+}
+
+.copilot__composer {
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-panel);
+}
+
+.copilot__input {
+  min-height: 68px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border-color: var(--border);
+  background: var(--bg-input);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+}
+
+.copilot__input:hover {
+  border-color: var(--border-strong);
+}
+
+.copilot__input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+  outline: none;
+}
+
+.copilot__actions {
+  gap: var(--space-2);
+}
+
+.copilot-history {
+  border-bottom-color: var(--border);
+}
+
+.copilot-history__item {
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+}
+
+.copilot-history__item:hover {
+  background: var(--bg-hover);
+  border-color: var(--border);
+}
+
+.copilot-history__item--active {
+  background: var(--accent-subtle);
+  border-color: var(--accent-line);
+}
+
+.copilot-thinking,
+.copilot-trace {
+  border-radius: var(--radius-md);
+  border-color: var(--border);
+  background: var(--bg-panel);
+}
+
+.copilot-stage {
+  border-radius: var(--radius-sm);
+}
+
+/* ---- run panel ---- */
+
+.run__bar {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-panel);
+}
+
+.run__body {
+  padding: 12px;
+}
+
+.run-step {
+  border-radius: var(--radius-md);
+  border-color: var(--border);
+  background: var(--bg-input);
+}
+
+.run-step__header {
+  padding: 9px 10px;
+}
+
+.run-step--running {
+  border-color: var(--info);
+  background: var(--info-subtle);
+}
+
+.run-step--failed {
+  border-color: var(--danger);
+  background: var(--danger-subtle);
+}
+
+.run-step__stream {
+  border-radius: var(--radius-sm);
+  background: var(--bg-panel);
+}
+
+/* ---- inspector ---- */
+
+.inspector {
+  padding: 14px;
+}
+
+.inspector__header {
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.inspector__title {
+  font-size: var(--text-md);
+  font-weight: 650;
+}
+
+.inspector__type-hint {
+  color: var(--text-dim);
+}
+
+.inspector__section {
+  padding: 14px 0;
+  border-top: 1px solid var(--border);
+}
+
+.inspector__section:first-of-type {
+  border-top: none;
+}
+
+.inspector__icon {
+  color: var(--node-color, var(--accent));
+}
+
+.inspector__port-list li {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+}
+
+.schema-form__advanced > summary {
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+}
+
+.schema-form__advanced > summary:hover {
+  background: var(--bg-hover);
+  color: var(--text-muted);
+}
+
+/* ---- versions & data panels ---- */
+
+.version-item {
+  border-radius: var(--radius-md);
+  border-color: var(--border);
+}
+
+.version-item:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+}
+
+.version-item--active {
+  border-color: var(--accent-line);
+  background: var(--accent-subtle);
+}
+
+.version-card,
+.version-ai-card {
+  border-radius: var(--radius-md);
+  border-color: var(--border);
+  background: var(--bg-input);
+}
+
+.db__head {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.db__table {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  background: var(--bg-input);
+}
+
+.db__table-head {
+  background: var(--bg-panel);
+}
+
+.db__row {
+  border-top: 1px solid var(--border);
+}
+
+.db__row--new {
+  background: var(--accent-subtle);
+}
+
+/* ==========================================================================
+   12. Markdown in a light room
+
+   `github-markdown-dark.css` is imported globally (see main.tsx) because the
+   app shipped dark-first. Now that light is the default, its explicit colours
+   are overridden here. Code blocks stay dark on purpose — a dark code panel
+   inside a light card is the familiar convention, not an oversight.
+   ========================================================================== */
+
+[data-theme='light'] .markdown-body {
+  color: var(--text);
+  background: transparent;
+}
+
+[data-theme='light'] .markdown-body h1,
+[data-theme='light'] .markdown-body h2,
+[data-theme='light'] .markdown-body h3,
+[data-theme='light'] .markdown-body h4,
+[data-theme='light'] .markdown-body h5,
+[data-theme='light'] .markdown-body h6 {
+  color: var(--text);
+  border-bottom-color: var(--border);
+}
+
+[data-theme='light'] .markdown-body a {
+  color: var(--accent);
+}
+
+[data-theme='light'] .markdown-body p,
+[data-theme='light'] .markdown-body li,
+[data-theme='light'] .markdown-body td,
+[data-theme='light'] .markdown-body th {
+  color: var(--text-muted);
+}
+
+[data-theme='light'] .markdown-body th {
+  color: var(--text);
+}
+
+[data-theme='light'] .markdown-body blockquote {
+  color: var(--text-dim);
+  border-left-color: var(--border-strong);
+}
+
+[data-theme='light'] .markdown-body hr {
+  background: var(--border);
+  border-color: var(--border);
+}
+
+[data-theme='light'] .markdown-body table tr {
+  background: transparent;
+  border-color: var(--border);
+}
+
+[data-theme='light'] .markdown-body table tr:nth-child(2n) {
+  background: var(--bg-input);
+}
+
+[data-theme='light'] .markdown-body table td,
+[data-theme='light'] .markdown-body table th {
+  border-color: var(--border);
+}
+
+[data-theme='light'] .markdown-body code {
+  background: var(--bg-input);
+  color: var(--text);
+}
+
+[data-theme='light'] .markdown-body pre {
+  background: #12161f;
+  border: 1px solid #222b38;
+  border-radius: var(--radius-md);
+}
+
+[data-theme='light'] .markdown-body pre code {
+  background: transparent;
+  color: #e8edf5;
+}
+
+[data-theme='light'] .markdown-body .hljs {
+  background: transparent;
+  color: #e8edf5;
+}
+
+/* Copilot markdown is a custom class, not github-markdown-css. Keep its
+   inline code and quotes legible on light surfaces. */
+[data-theme='light'] .copilot-msg__markdown code {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+[data-theme='light'] .copilot-msg__markdown pre {
+  border-radius: var(--radius-md);
+}
+
+[data-theme='light'] .copilot-msg__markdown blockquote {
+  border-left-color: var(--border-strong);
+  color: var(--text-dim);
+}
+
+/* ==========================================================================
+   13. Small theme-specific corrections
+   ========================================================================== */
+
+[data-theme='light'] .gate-shell,
+[data-theme='light'] .gate-card {
+  color-scheme: light;
+}
+
+/* The brand mark's gradient tile already carries the accent; the header surface
+   itself stays the panel colour in both themes. */
+[data-theme='light'] .app-header {
+  background: var(--bg-panel);
+}
+
+[data-theme='dark'] .brand svg {
+  box-shadow: 0 4px 16px rgba(91, 141, 239, 0.35);
+}
+
+.theme-toggle svg {
+  transition: transform var(--transition);
+}
+
+.theme-toggle:hover svg {
+  transform: rotate(-12deg);
+}
+
+/* ==========================================================================
+   14. Header fit & remaining polish (round 2)
+   ========================================================================== */
+
+/* The header carries a lot: brand, view switch, name, seven tool buttons, two
+   action buttons, the assist switch, theme, language and Run. The workflow name
+   is the one item that can give up width — shrinking it keeps Run on screen at
+   1440 instead of pushing the primary action off the right edge. */
+.app-header {
+  gap: 6px;
+  overflow: hidden;
+}
+
+.header__name {
+  flex: 0 1 300px;
+  width: auto;
+  min-width: 120px;
+}
+
+.app-header .btn--icon,
+.btn--icon {
+  width: 30px;
+}
+
+.btn--icon.btn--sm {
+  width: 26px;
+}
+
+.header__divider {
+  margin: 0 1px;
+}
+
+/* The dashed cursor glyph read like an unfinished placeholder. Give it the
+   brand treatment the welcome card deserves. */
+.canvas__welcome > svg {
+  box-sizing: content-box;
+  width: 26px;
+  height: 26px;
+  padding: 13px;
+  border-radius: var(--radius-xl);
+  color: var(--accent);
+  background: var(--accent-subtle);
+  border: 1px solid var(--accent-line);
+  box-shadow: var(--shadow-accent);
+}
+
+/* Toolbar above the canvas: one quiet strip instead of floating controls. */
+.copilot-bar {
+  gap: 0;
+  padding: 6px 12px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: none;
+}
+
+.copilot-bar__controls {
+  gap: 8px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.copilot-modes {
+  padding: 3px;
+  border-color: transparent;
+  background: var(--bg-input);
+}
+
+.copilot-mode {
+  height: 26px;
+  padding: 0 11px;
+  font-weight: 500;
+}
+
+.copilot-mode--active {
+  background: var(--bg-raised);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+.copilot-scope__button {
+  height: 26px;
+  padding: 0 10px;
+  background: var(--bg-input);
+  border-color: transparent;
+  font-weight: 500;
+}
+
+.copilot-scope__button:hover {
+  background: var(--bg-hover);
+  border-color: var(--border);
+}
+
+.copilot-scope__button--active {
+  color: var(--accent);
+  background: var(--accent-subtle);
+  border-color: var(--accent-line);
+}
+
+.copilot-scope__clear {
+  width: 22px;
+  height: 22px;
+}
+
+.copilot-waiting {
+  color: var(--warning);
+}
+
+/* Right panel composer: a card, so the panel reads as a conversation surface
+   rather than a form stapled under a log. */
+.copilot__composer {
+  padding: 12px 12px 14px;
+}
+
+.copilot__actions {
+  align-items: center;
+}
+
+.copilot-sample {
+  border-radius: var(--radius-md);
+  border-color: var(--border);
+  background: var(--bg-input);
+}
+
+/* A quieter, denser palette footer. */
+.palette__footer {
+  background: var(--bg-panel);
+}
+
+/* Node cards: keep the description from looking like a disabled input. */
+.node__description {
+  cursor: text;
+}
+
+.node__title {
+  cursor: text;
+}
+
+/* Run strip on the canvas should float above the glow without a hard white slab. */
+.canvas__run {
+  backdrop-filter: blur(6px);
+  background: color-mix(in srgb, var(--bg-panel) 92%, transparent);
+}
+
+/* Scrollbar corners in light mode otherwise show the browser default grey. */
+[data-theme='light'] ::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ==========================================================================
+   15. "Use" view — the end-user conversation
+
+   The same component is also the right-panel run tab, so every rule below is
+   scoped to `.app-main`, where the view fills the canvas area.
+   ========================================================================== */
+
+.app-main > .run {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: transparent;
+}
+
+.app-main > .run > .run__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 30px 24px 10px;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+.app-main > .run > .run__body > .chat {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.app-main > .run .empty {
+  margin: auto;
+  padding: 0;
+  color: var(--text-dim);
+  font-size: var(--text-sm);
+}
+
+/* ---- turns ---- */
+
+.app-main > .run .chat__said {
+  align-self: flex-end;
+  max-width: 78%;
+  margin: 0;
+  padding: 10px 15px;
+  border-radius: 14px 4px 14px 14px;
+  background: var(--accent-subtle);
+  border: 1px solid var(--accent-line);
+  color: var(--text);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.app-main > .run .chat__agent {
+  align-self: flex-start;
+  max-width: 86%;
+  margin: 0;
+  padding: 12px 15px;
+  border-radius: 4px 14px 14px 14px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  color: var(--text);
+  font-size: var(--text-base);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.app-main > .run .chat__agent--warn {
+  border-color: var(--warning);
+  background: var(--warning-subtle);
+  color: var(--warning);
+}
+
+.app-main > .run .chat__agent--ask {
+  max-width: 100%;
+  border-radius: var(--radius-lg);
+}
+
+.app-main > .run .chat__ask {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--accent-line);
+  background: var(--accent-subtle);
+}
+
+.app-main > .run .run__outputs {
+  align-self: stretch;
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
+  box-shadow: var(--shadow-sm);
+  font-size: var(--text-base);
+  color: var(--text);
+}
+
+.app-main > .run .run__outputs .section-label {
+  margin-bottom: var(--space-2);
+  color: var(--accent);
+}
+
+.app-main > .run .callout {
+  align-self: stretch;
+}
+
+/* ---- composer ---- */
+
+.app-main > .run > .chat__composer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(920px, calc(100% - 48px));
+  margin: 0 auto 22px;
+  padding: 8px 8px 8px 16px;
+  border-radius: calc(var(--radius-lg) + 2px);
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
+  box-shadow: var(--shadow-md, var(--shadow));
+}
+
+.app-main > .run > .chat__composer:focus-within {
+  border-color: var(--accent-line);
+  box-shadow: 0 0 0 3px var(--accent-subtle), var(--shadow);
+}
+
+.app-main > .run > .chat__composer .input {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  font-size: var(--text-base);
+}
+
+.app-main > .run > .chat__composer .input:focus {
+  border: none;
+  box-shadow: none;
+}
+
+.app-main > .run > .chat__composer .btn--primary {
+  height: 38px;
+  padding: 0 18px;
+  border-radius: var(--radius-md);
+}
+
+/* A blank conversation deserves a face, not a sentence floating in the middle
+   of the screen. */
+.app-main > .run .empty {
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 460px;
+  font-size: var(--text-base);
+  line-height: 1.7;
+  text-align: center;
+}
+
+.app-main > .run .empty::before {
+  content: '✦';
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-xl);
+  background: var(--accent-gradient);
+  color: #fff;
+  font-size: 26px;
+  line-height: 1;
+  box-shadow: 0 12px 32px var(--accent-glow);
+}
+
+/* The dialog panel receives focus programmatically on open (so Escape and Tab
+   stay inside the modal). That focus is an implementation detail, not a place
+   the user can act on, so it must not draw a focus ring. */
+.dialog:focus {
+  outline: none;
+}
+
+/* ==========================================================================
+   16. Narrow screens: give the canvas room back
+   ========================================================================== */
+
+@media (max-width: 1320px) {
+  :root {
+    --panel-width: 248px;
+    --inspector-width: 336px;
+  }
+}
+
+@media (max-width: 1120px) {
+  :root {
+    --panel-width: 228px;
+    --inspector-width: 312px;
+  }
+
+  /* The palette keeps names and hides prose; the tooltip still carries the
+     description, and a squeezed palette is better than a squeezed canvas. */
+  .palette__item-description {
+    display: none;
+  }
+
+  .canvas__welcome {
+    max-width: calc(100% - 24px);
+    padding: 24px 18px 20px;
+  }
+
+  .canvas__welcome strong {
+    font-size: var(--text-lg);
+  }
+
+  .canvas__scenarios {
+    flex-wrap: wrap;
+  }
+
+  .scenario-card {
+    flex: 1 1 132px;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 980px) {
+  :root {
+    --panel-width: 216px;
+    --inspector-width: 292px;
+  }
+
+  .app-header .tab {
+    padding: 0 10px;
+  }
+
+  .header__name {
+    min-width: 96px;
+  }
+}
+
+/* The assistant's empty state was a sentence floating in a large blank panel.
+   A quiet card with an icon reads as "this panel is ready", not "this panel is
+   broken". */
+.copilot__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: 300px;
+  margin: 12vh auto 0;
+  padding: 20px 18px;
+  text-align: center;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--bg-input);
+  color: var(--text-dim);
+  font-size: var(--text-sm);
+  line-height: 1.65;
+}
+
+.copilot__empty::before {
+  content: '✦';
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background: var(--accent-subtle);
+  color: var(--accent);
+  font-size: 17px;
+  border: 1px solid var(--accent-line);
+}
+
+
+/* Searching the saved-workflow list: with dozens of rows, scrolling alone does
+   not scale. The icon sits inside the field like the palette's search box. */
+.browser__search {
+  position: relative;
+  margin-bottom: var(--space-3);
+}
+
+.browser__search .input {
+  width: 100%;
+  padding-left: 32px;
+}
+
+.browser__search-icon {
+  position: absolute;
+  top: 50%;
+  left: 11px;
+  transform: translateY(-50%);
+  color: var(--text-dim);
+  pointer-events: none;
+}
+
+
+/* Right-click menu on the canvas. */
+.canvas__menu {
+  position: absolute;
+  z-index: 30;
+  min-width: 168px;
+  padding: 4px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
+  box-shadow: var(--shadow-lg, var(--shadow));
+}
+
+.canvas__menu-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 7px 10px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  font-size: var(--text-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.canvas__menu-item:hover {
+  background: var(--bg-hover);
+}
+
+.canvas__menu-item--danger {
+  color: var(--danger);
+}
+
+.canvas__menu-item--danger:hover {
+  background: var(--danger-subtle);
+}
+
+/* A validation error that belongs to this node; the issue panel lists it, the
+   card points at where it lives. */
+.node__error {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-left: 2px;
+  border-radius: var(--radius-full);
+  color: var(--danger);
+  background: var(--danger-subtle);
+  flex-shrink: 0;
+}
+
+.node:has(.node__error) {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--node-border));
+}
+
+/* The palette's "trusted code" flag touched the label without a gap. */
+.palette__item-flag {
+  margin-left: 6px;
+}

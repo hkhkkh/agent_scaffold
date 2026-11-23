@@ -1,0 +1,96 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# ---- Node ----
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+coverage/
+playwright-report/
+test-results/
+
+# ---- Project data ----
+data/*.db
+data/*.db-journal
+# SQLite in WAL mode keeps two sidecar files beside each database. The `*.db`
+# rule above does not cover them, so before this line they were the only
+# database files that would have been committed -- 4.4 MB of live run data,
+# including a memory.db index. They are not part of the schema; the migrations
+# under `backend/migrations/` are.
+data/*.db-wal
+data/*.db-shm
+data/runs/
+# Generated agent packages: build output, one per export, 50+ files each. The
+# definition they are built from is what belongs in version control.
+data/exports/
+data/logs/
+data/backups/
+# Workflow JSON exports ARE tracked on purpose (git-friendly artifacts)
+!data/workflows/
+.env
+.env.local
+# Public deployment secrets and tunnel config. `.env.public.example` is the
+# tracked template; the real file contains four 32+ character credentials.
+.env.public
+tools/cloudflared*.exe
+.cloudflared/
+
+# ---- A second copy of the frontend ----
+# `frontend/` is the live one (29 source files, referenced by every doc and by
+# the Vite config). `_web/` is an older tree with node_modules and five build
+# logs in it. Committing both would mean two answers to "where is the client".
+_web/
+
+# ---- Generated diagnostics ----
+# Scratch output from scripts/restart_backend.ps1 and backend/scripts/check_i18n.py.
+# They are written and re-written on every run, and exist to be read from the
+# filesystem because this console mangles UTF-8 — not to be committed.
+#
+# The blanket `backend/_*` also matched the four verification tools below, which
+# are **not** scratch output: `docs/README.md` requires that every new guard gets
+# a case added to `_guardprobe_capability.py`, and `status.md` publishes their
+# counts. The negations are what keep the tools while still ignoring transient
+# files.
+backend/_*
+!backend/_guardprobe_capability.py
+!backend/_guardprobe_security.py
+!backend/_restore_guardprobe.py
+!backend/_check_docs.py
+
+# ---- 封条（发布用，必须进 git）----
+# `backend/_vendor/` 里的 49 个轮子由 `backend/scripts/build_vendor.py` 从锁文件重建，
+# 体积大且有平台标签，不进版本控制。
+#
+# [2026-10-10] 46 → 49：补 `aiosqlite` / `langgraph-checkpoint-sqlite` /
+# `sqlite-vec`（`runtime/checkpoints.py` 只在函数体内惰性 import 它们，
+# 所以没有任何模块级 import 把它们带进闭包 —— 见 `build_vendor.py` 的 DIRECT）。
+#
+# `_vendor_requirements.txt` 不一样：它是「相同底层」这件事的**唯一事实来源** ——
+# 每条 pin 带一个 sha256，导出器把它抄进 agent 包的 requirements.txt，客户用
+# `--require-hashes` 安装。它丢了，封条就只能靠记忆重建，而记忆会和实际漂移。
+!backend/_vendor_requirements.txt
+backend/i18n_report.txt
+backend/i18n_api.json
+# Sidecar copies written by backend/_guardprobe_security.py before it mutates any
+# source file. Normally removed on a clean exit; left behind if it was killed.
+backend/_guardprobe_backup/
+backend/_guardprobe_capability_backup/
+_renum.txt
+
+# ---- Editor / OS ----
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db
+*.log

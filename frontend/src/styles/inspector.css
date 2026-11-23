@@ -1,0 +1,606 @@
+/* Inspector, generated config form, AI suggestion diff, node test, JSON tree. */
+
+/* --------------------------------------------------------------------------
+   Panel frame
+   -------------------------------------------------------------------------- */
+
+.inspector {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-3);
+  gap: var(--space-4);
+}
+
+.inspector--empty {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-6);
+}
+
+.inspector__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.inspector__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+  flex-shrink: 0;
+}
+
+.inspector__title {
+  font-size: var(--text-md);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inspector__type-hint {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+}
+
+.inspector__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+/* Node level errors sit directly under the header, before anything editable. */
+.inspector__section:has(> .callout) + .inspector__section {
+  padding-top: 0;
+}
+
+/* --------------------------------------------------------------------------
+   What this step did, in words.
+
+   Tinted rather than plain, because it describes a past event rather than
+   something the user can edit — the rest of this panel is all settings.
+   -------------------------------------------------------------------------- */
+
+.inspector__run {
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-input);
+}
+
+.inspector__run-line {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+.inspector__run-logs {
+  font-size: var(--text-xs);
+  color: var(--text-dim);
+}
+
+.inspector__run-logs summary {
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.inspector__run-logs ul {
+  margin: var(--space-2) 0 0;
+  padding-left: var(--space-4);
+}
+
+.inspector__run-logs li {
+  margin-bottom: var(--space-1);
+  font-family: var(--font-mono);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* What the assistant did here on its own. Same tinted treatment as the run
+   summary above it, and for the same reason: it describes an event rather than
+   a setting the user can edit. */
+.inspector__assist {
+  padding: var(--space-3);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
+  background: var(--accent-subtle);
+}
+
+.inspector__assist .section-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--accent);
+}
+
+.inspector__assist--failed {
+  border-color: var(--warning);
+  background: var(--warning-subtle);
+}
+
+.inspector__assist--failed .section-label {
+  color: var(--warning);
+}
+
+.inspector__trust {
+  align-items: flex-start;
+  padding: var(--space-2);
+  border: 1px solid var(--warning);
+  border-radius: var(--radius);
+  background: var(--warning-subtle);
+}
+
+.inspector__trust .field__hint {
+  display: block;
+  margin-top: 2px;
+}
+
+/* ---- Ports reference (collapsed by default) ---- */
+
+.inspector__details summary,
+.inspector__disclosure summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  cursor: pointer;
+  list-style: none;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.inspector__details summary::-webkit-details-marker,
+.inspector__disclosure summary::-webkit-details-marker {
+  display: none;
+}
+
+.inspector__details summary:hover,
+.inspector__disclosure summary:hover {
+  color: var(--text);
+}
+
+.inspector__details[open] summary svg,
+.inspector__disclosure[open] summary svg {
+  transform: rotate(180deg);
+}
+
+.inspector__ports {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+}
+
+.inspector__port-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.inspector__port-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* --------------------------------------------------------------------------
+   Generated config form
+   -------------------------------------------------------------------------- */
+
+.schema-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.schema-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.schema-form__advanced {
+  border-top: 1px dashed var(--border);
+  padding-top: var(--space-2);
+}
+
+.schema-form__advanced > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  cursor: pointer;
+  list-style: none;
+  color: var(--text-dim);
+  font-size: var(--text-xs);
+}
+
+.schema-form__advanced > summary::-webkit-details-marker {
+  display: none;
+}
+
+.schema-form__advanced > summary:hover {
+  color: var(--text);
+}
+
+.schema-form__chevron {
+  transition: transform var(--transition);
+}
+
+.schema-form__advanced[open] .schema-form__chevron {
+  transform: rotate(90deg);
+}
+
+.schema-form__advanced-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+}
+
+/* An invalid JSON draft is a normal, expected state while typing — so the
+   message is quiet rather than alarming, and does not block the form. */
+.json-field,
+.model-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.json-field__error {
+  margin: 0;
+  color: var(--danger);
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+}
+
+/* --------------------------------------------------------------------------
+   Fill with AI — button, diff, review
+   -------------------------------------------------------------------------- */
+
+.fill-ai {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.suggestion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--accent-subtle);
+}
+
+.suggestion__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--accent);
+}
+
+.suggestion__rationale {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+}
+
+.suggestion__changes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.suggestion__changes li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+}
+
+.suggestion__field {
+  color: var(--text-dim);
+  font-size: var(--text-xs);
+}
+
+.suggestion__before,
+.suggestion__after {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.suggestion__before {
+  color: var(--danger);
+  text-decoration: line-through;
+  text-decoration-color: rgba(239, 68, 68, 0.5);
+}
+
+.suggestion__after {
+  color: var(--success);
+}
+
+.suggestion__remove {
+  font-family: var(--font-mono);
+}
+
+.suggestion__warnings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.suggestion__footer {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* --------------------------------------------------------------------------
+   Node test
+   -------------------------------------------------------------------------- */
+
+.node-test {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.node-test__result {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.node-test__logs {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.node-test__log {
+  padding: 3px var(--space-2);
+  border-left: 2px solid var(--border-strong);
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.node-test__log--info {
+  border-left-color: var(--info);
+}
+
+.node-test__log--warning {
+  border-left-color: var(--warning);
+  color: var(--warning);
+}
+
+.node-test__log--error {
+  border-left-color: var(--danger);
+  color: #fca5a5;
+}
+
+/* --------------------------------------------------------------------------
+   Edge summary
+   -------------------------------------------------------------------------- */
+
+.edge-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.edge-summary__node {
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   JSON tree viewer
+   -------------------------------------------------------------------------- */
+
+.json-viewer {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-input);
+  overflow: hidden;
+}
+
+.json-viewer__bar {
+  display: flex;
+  align-items: center;
+  padding: 2px var(--space-1) 2px var(--space-2);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-raised);
+}
+
+.json-viewer__label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.json-viewer__body {
+  padding: var(--space-2);
+  overflow: auto;
+  font-size: var(--text-xs);
+  line-height: 1.6;
+}
+
+.json-viewer__group {
+  display: flex;
+  flex-direction: column;
+}
+
+.json-viewer__row,
+.json-viewer__toggle {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+  min-height: 18px;
+  text-align: left;
+}
+
+.json-viewer__toggle {
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+
+.json-viewer__toggle:hover {
+  background: var(--bg-hover);
+}
+
+.json-viewer__chevron {
+  flex-shrink: 0;
+  transform: translateY(2px);
+  transition: transform var(--transition);
+  color: var(--text-dim);
+}
+
+.json-viewer__chevron.is-open {
+  transform: translateY(2px) rotate(90deg);
+}
+
+.json-viewer__key {
+  color: var(--text-muted);
+}
+
+.json-viewer__key::after {
+  content: ':';
+  color: var(--text-dim);
+}
+
+.json-viewer__summary,
+.json-viewer__empty {
+  color: var(--text-dim);
+}
+
+.json-viewer__value--string {
+  color: var(--success);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.json-viewer__value--number {
+  color: var(--warning);
+}
+
+.json-viewer__value--boolean {
+  color: var(--info);
+}
+
+.json-viewer__value--null {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* --------------------------------------------------------------------------
+   Template completion
+
+   Anchored to the field, not the caret: measuring the caret needs a mirrored
+   off-screen element, and a menu in a predictable place beats one that is
+   sometimes wrong. The field wrapper is what makes the absolute menu possible.
+   -------------------------------------------------------------------------- */
+
+.template-field {
+  position: relative;
+}
+
+.template-menu {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: var(--space-1);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--bg-panel);
+  box-shadow: var(--shadow-lg);
+}
+
+.template-menu__hint,
+.template-menu__empty {
+  padding: 3px var(--space-2);
+  color: var(--text-dim);
+  font-size: var(--text-xs);
+}
+
+.template-menu__item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 100%;
+  padding: 5px var(--space-2);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.template-menu__item:hover,
+.template-menu__item--active {
+  background: var(--accent-subtle);
+}
+
+.template-menu__path {
+  color: var(--text);
+  font-size: var(--text-xs);
+  word-break: break-all;
+}
+
+.template-menu__detail {
+  color: var(--text-dim);
+  font-size: 11px;
+}

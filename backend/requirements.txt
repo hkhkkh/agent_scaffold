@@ -1,0 +1,58 @@
+# ---- Web framework ----
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+# `python-multipart` was declared here and never used: every endpoint takes a
+# JSON body, and nothing imports `Form`, `File`, or `UploadFile`. starlette only
+# needs it to parse multipart/form-data, so its absence is invisible — the cost
+# was a dependency with a CVE surface nobody was tracking.
+
+# ---- Config / validation ----
+pydantic>=2.9.0
+pydantic-settings>=2.6.0
+
+# ---- Persistence ----
+sqlmodel>=0.0.22
+sqlalchemy>=2.0.36
+# Runtime, not a dev tool: the application runs `upgrade head` at startup, so a
+# deployment without alembic cannot create or evolve its schema at all.
+# See `app/db/migrate.py`.
+alembic>=1.13.0
+
+# ---- Graph engine ----
+langgraph>=0.2.60
+langchain-core>=0.3.28
+langchain-openai>=0.2.14
+
+# Needed for exactly one thing: `langchain.agents.middleware.pii.apply_strategy`,
+# which `runtime/serialize.py` uses to rewrite credential-shaped strings. We
+# adopted it rather than reimplementing the strategies, so the version has to be
+# the 1.x line — the middleware moved there. Nothing else from `langchain` is
+# imported; the node system, the model gateway, and the tool registry are ours.
+#
+# Pinned to a major version on purpose: the previous 0.3.x was present in
+# development only as a stale transitive dependency and could not even import
+# (it needs `langchain-core` <1.0, and this project is on 1.x).
+langchain>=1.0,<2.0
+
+# ---- Streaming ----
+sse-starlette>=2.1.3
+httpx>=0.27.2
+
+# ---- Scheduling ----
+# APScheduler runs the schedule loop, the trigger arithmetic, and the lateness /
+# backlog policy for scheduled runs. Adopted rather than reimplemented: an earlier
+# version of that feature hand-wrote ~1500 lines of it, including a dateutil.rrule
+# adapter and a `while` loop with a clamping sleep.
+#
+# Pinned to the 3.x line on purpose. The project's own README says of 4.0: "may
+# change in a backwards incompatible fashion without any migration pathway, so do
+# NOT use this release in production."
+#
+# Only `tzlocal` comes with it, and `dateutil` is NOT one of its dependencies —
+# which is why the exported agent's requirements do not need it either. See
+# `app/scheduling/` and docs/target/reuse.md §1.33.
+APScheduler>=3.11,<4.0
+
+# ---- Dev / test ----
+pytest>=8.3.3
+pytest-asyncio>=0.24.0

@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f9fc" />
+    <title>Agent Scaffold — 把 AI 工作流画出来，跑起来</title>
+    <meta
+      name="description"
+      content="在画布上搭 AI Agent：一句话生成初稿，逐个节点配置，真实运行并查看每一步。可视化 LangGraph 工作流编辑器，无需账号即可体验。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Agent Scaffold" />
+    <meta property="og:title" content="Agent Scaffold — 把 AI 工作流画出来，跑起来" />
+    <meta
+      property="og:description"
+      content="画布 + AI 生成 + 真实运行。把 Agent 工作流变成看得见、改得动、跑得起来的东西。"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="/landing.css" />
+    <script src="/landing.js"></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Agent Scaffold",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Web",
+        "description": "可视化 AI Agent 工作流编辑器：画布、AI 生成、节点配置、真实运行和版本历史。",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <svg class="sprite" aria-hidden="true" focusable="false">
+      <symbol id="i-spark" viewBox="0 0 24 24">
+        <path d="M12 3l1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7L12 3Z" />
+        <path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z" />
+      </symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </symbol>
+      <symbol id="i-play" viewBox="0 0 24 24">
+        <path d="m9 7 8 5-8 5V7Z" />
+      </symbol>
+      <symbol id="i-check" viewBox="0 0 24 24">
+        <path d="m5 12.5 4.2 4.2L19 7" />
+      </symbol>
+      <symbol id="i-layers" viewBox="0 0 24 24">
+        <path d="m12 3 9 5-9 5-9-5 9-5Z" />
+        <path d="m3 12 9 5 9-5M3 16l9 5 9-5" />
+      </symbol>
+      <symbol id="i-history" viewBox="0 0 24 24">
+        <path d="M4 12a8 8 0 1 0 2.3-5.7" />
+        <path d="M4 4v4h4M12 8v4l3 2" />
+      </symbol>
+      <symbol id="i-branch" viewBox="0 0 24 24">
+        <path d="M6 4v16M18 4v5a4 4 0 0 1-4 4H6" />
+        <circle cx="6" cy="4" r="2" /><circle cx="6" cy="20" r="2" /><circle cx="18" cy="4" r="2" />
+      </symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24">
+        <path d="M12 3 20 6v6c0 4.5-3.2 7.5-8 9-4.8-1.5-8-4.5-8-9V6l8-3Z" />
+        <path d="m8.5 12 2.2 2.2 4.8-4.8" />
+      </symbol>
+      <symbol id="i-sliders" viewBox="0 0 24 24">
+        <path d="M4 7h16M4 17h16M8 4v6M16 14v6" />
+      </symbol>
+      <symbol id="i-code" viewBox="0 0 24 24">
+        <path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14" />
+      </symbol>
+      <symbol id="i-search" viewBox="0 0 24 24">
+        <circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4 4" />
+      </symbol>
+      <symbol id="i-db" viewBox="0 0 24 24">
+        <ellipse cx="12" cy="5" rx="8" ry="3" />
+        <path d="M4 5v7c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12v7c0 1.7 3.6 3 8 3s8-1.3 8-3v-7" />
+      </symbol>
+      <symbol id="i-users" viewBox="0 0 24 24">
+        <circle cx="9" cy="8" r="3.2" /><path d="M3.5 20c.4-3.4 2.3-5.2 5.5-5.2s5.1 1.8 5.5 5.2" />
+        <path d="M16 5.5a3 3 0 0 1 0 5.8M17 14.8c2.1.5 3.2 2.1 3.5 5.2" />
+      </symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24">
+        <rect x="4" y="10" width="16" height="11" rx="2.5" />
+        <path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3" />
+      </symbol>
+      <symbol id="i-cursor" viewBox="0 0 24 24">
+        <path d="m5 4 14 7-6 2-2 6L5 4Z" />
+      </symbol>
+      <symbol id="i-grid" viewBox="0 0 24 24">
+        <rect x="4" y="4" width="6" height="6" rx="1" /><rect x="14" y="4" width="6" height="6" rx="1" />
+        <rect x="4" y="14" width="6" height="6" rx="1" /><rect x="14" y="14" width="6" height="6" rx="1" />
+      </symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24">
+        <path d="M20 7v5h-5M4 17v-5h5" />
+        <path d="M18.2 12A6.5 6.5 0 0 0 6.4 7.4L4 12M5.8 12A6.5 6.5 0 0 0 17.6 16.6L20 12" />
+      </symbol>
+    </svg>
+
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="/">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>Agent Scaffold<small>Visual AI workflow studio</small></span>
+        </a>
+        <nav class="site-nav" aria-label="主导航">
+          <a href="#product">产品能力</a>
+          <a href="#showcase">运行方式</a>
+          <a href="#templates">模板</a>
+          <a href="#security">安全</a>
+          <a href="#faq">常见问题</a>
+        </nav>
+        <div class="header-cta">
+          <a class="btn btn-primary btn-sm" href="/app">
+            打开演示
+            <svg class="ico"><use href="#i-arrow" /></svg>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <span class="hero-blob hero-blob-a" aria-hidden="true"></span>
+        <span class="hero-blob hero-blob-b" aria-hidden="true"></span>
+        <div class="container hero-grid">
+          <div class="hero-copy">
+            <span class="eyebrow">Visual AI Agent Studio</span>
+            <h1>把 AI 工作流<br /><span>画出来，跑起来。</span></h1>
+            <p class="lead">
+              在画布上搭 Agent：一句话生成初稿，逐个节点配置，真实运行并查看每一步。
+              不是流程图，是能交付结果的 AI 工作台。
+            </p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="/app">
+                免费打开演示
+                <svg class="ico"><use href="#i-arrow" /></svg>
+              </a>
+              <a class="btn btn-light" href="#showcase">
+                <svg class="ico"><use href="#i-play" /></svg>
+                看它能做什么
+              </a>
+            </div>
+            <ul class="hero-meta">
+              <li><svg class="ico"><use href="#i-check" /></svg>无需账号</li>
+              <li><svg class="ico"><use href="#i-shield" /></svg>人机验证</li>
+              <li><svg class="ico"><use href="#i-spark" /></svg>每日免费额度</li>
+            </ul>
+          </div>
+
+          <div class="hero-visual">
+            <div class="product-window" aria-label="Agent Scaffold 编辑器界面预览">
+              <div class="window-bar">
+                <span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span>
+                <span class="window-url">app.hkhkk.dev/app</span>
+                <span class="window-live">LIVE</span>
+              </div>
+              <div class="app-mock">
+                <aside class="app-rail" aria-hidden="true">
+                  <span class="rail-icon active"></span><span class="rail-icon"></span>
+                  <span class="rail-icon"></span><span class="rail-icon"></span>
+                  <span class="rail-icon"></span>
+                </aside>
+                <div class="app-canvas">
+                  <div class="canvas-toolbar">
+                    <span class="canvas-tab active">情报雷达</span>
+                    <span class="canvas-tab">运行</span>
+                    <span class="canvas-spacer"></span>
+                    <span class="canvas-chip">● 自动保存</span>
+                  </div>
+                  <span class="edge e1"></span><span class="edge e2"></span>
+                  <span class="edge e3"></span><span class="edge e4"></span>
+                  <div class="node n1"><b>开始</b><small>用户输入</small></div>
+                  <div class="node n2 accent"><b>联网搜索</b><small>采集信息源</small></div>
+                  <div class="node n3"><b>模型分析</b><small>提取与归纳</small></div>
+                  <div class="node n4 blue"><b>结构化校验</b><small>规则 + 模型</small></div>
+                  <div class="node n5"><b>写入结果库</b><small>可追溯产出</small></div>
+                  <div class="ai-prompt">
+                    <span class="spark"><svg class="ico"><use href="#i-spark" /></svg></span>
+                    <span class="prompt-text">描述你的工作流，AI 来搭第一版…</span>
+                    <span>生成</span>
+                  </div>
+                </div>
+                <aside class="app-panel">
+                  <p class="panel-title">RUN · 运行详情</p>
+                  <div class="panel-run">
+                    <div class="panel-run-head"><span>run_8f21</span><span>成功</span></div>
+                    <div class="panel-step done"><i></i>开始</div>
+                    <div class="panel-step done"><i></i>联网搜索</div>
+                    <div class="panel-step done"><i></i>模型分析</div>
+                    <div class="panel-step done"><i></i>写入结果库</div>
+                  </div>
+                  <div class="panel-output"><b>最终产出</b>已生成结构化情报简报，包含来源、结论和下一步建议。</div>
+                </aside>
+              </div>
+            </div>
+            <div class="hero-caption">真实执行 · 事件流实时更新</div>
+          </div>
+        </div>
+        <a class="scroll-cue" href="#product" aria-label="向下浏览产品能力">
+          <span>向下浏览</span><i></i>
+        </a>
+      </section>
+
+      <section class="trust-strip" aria-label="技术栈">
+        <div class="container trust-inner">
+          <span class="trust-label">Built with</span>
+          <ul class="stack-list">
+            <li>FastAPI</li><li>LangGraph</li><li>React Flow</li><li>DeepSeek</li>
+          </ul>
+          <div class="trust-points">
+            <span><svg class="ico"><use href="#i-play" /></svg>真实运行</span>
+            <span><svg class="ico"><use href="#i-history" /></svg>版本历史</span>
+            <span><svg class="ico"><use href="#i-shield" /></svg>安全演示</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="product">
+        <div class="container">
+          <div class="section-head">
+            <span class="eyebrow">Why Agent Scaffold</span>
+            <h2>画布只是入口，<br />交付才是重点。</h2>
+            <p class="lead">
+              从描述目标到拿到结果，中间需要的是能跑、能改、能复盘的完整工作台。
+              这里把生成、配置、运行和版本放在同一张画布上。
+            </p>
+          </div>
+          <div class="feature-grid">
+            <article class="feature-card">
+              <span class="feature-icon"><svg class="ico"><use href="#i-spark" /></svg></span>
+              <h3>一句话生成整张图</h3>
+              <p>描述目标，AI 拆步骤、选节点、连线，并把配置填到能跑的程度。</p>
+              <span class="feature-tag">AI AUTHORING</span>
+            </article>
+            <article class="feature-card">
+              <span class="feature-icon"><svg class="ico"><use href="#i-play" /></svg></span>
+              <h3>真实运行，不是预览</h3>
+              <p>SSE 实时推送每个节点的事件、输入输出和错误，运行结束有完整结果。</p>
+              <span class="feature-tag">REAL EXECUTION</span>
+            </article>
+            <article class="feature-card">
+              <span class="feature-icon"><svg class="ico"><use href="#i-cursor" /></svg></span>
+              <h3>AI 副驾受控改图</h3>
+              <p>读全图、写选区；先给方案，确认后修改，改完自动试跑并对比产出。</p>
+              <span class="feature-tag">SCOPED EDIT</span>
+            </article>
+            <article class="feature-card">
+              <span class="feature-icon"><svg class="ico"><use href="#i-sliders" /></svg></span>
+              <h3>每个节点都能调</h3>
+              <p>模型、提示词、工具、条件、循环和子图，都可以在右侧面板精确配置。</p>
+              <span class="feature-tag">NODE CONTROL</span>
+            </article>
+            <article class="feature-card">
+              <span class="feature-icon"><svg class="ico"><use href="#i-history" /></svg></span>
+              <h3>版本历史与语义 diff</h3>
+              <p>每次保存都有版本，拖动画布不算改定义，回滚有据可查。</p>
+              <span class="feature-tag">VERSIONED</span>
+            </article>
+            <article class="feature-card">
+              <span class="feature-icon"><svg class="ico"><use href="#i-users" /></svg></span>
+              <h3>多 Agent 与复杂编排</h3>
+              <p>Supervisor、并行团队、循环回边和子图，复杂结构也能看得清。</p>
+              <span class="feature-tag">ORCHESTRATION</span>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--tint" id="showcase">
+        <div class="container">
+          <div class="split">
+            <div class="split-copy">
+              <span class="eyebrow">Real execution</span>
+              <h2>看得见的每一步，<br />才能改得动。</h2>
+              <p class="lead">
+                运行不是黑盒。时间线展示节点开始/结束、流式输出、重试和错误；
+                每一步都能展开看输入输出，定位问题不用猜。
+              </p>
+              <ul class="check-list">
+                <li><svg class="ico"><use href="#i-check" /></svg>SSE 事件流：开始、输出、结束、失败实时可见</li>
+                <li><svg class="ico"><use href="#i-check" /></svg>单节点试跑：改完一个节点就能验证，不用整图重跑</li>
+                <li><svg class="ico"><use href="#i-check" /></svg>结果落库：最终产出、步骤和运行记录都可追溯</li>
+              </ul>
+            </div>
+            <div class="dark-card">
+              <div class="dark-card-head"><span class="dot"></span>RUN · 情报雷达 · 42 个节点</div>
+              <div class="run-body">
+                <div class="run-summary"><b>运行成功</b><span>1m 42s · 18,640 tokens</span></div>
+                <div class="run-steps">
+                  <div class="run-step"><span class="tick"><svg class="ico"><use href="#i-check" /></svg></span><span><b>开始</b><small>接收查询与上下文</small></span><em>12ms</em></div>
+                  <div class="run-step"><span class="tick"><svg class="ico"><use href="#i-check" /></svg></span><span><b>联网搜索</b><small>采集 6 个信息源</small></span><em>8.4s</em></div>
+                  <div class="run-step"><span class="tick"><svg class="ico"><use href="#i-check" /></svg></span><span><b>模型分析</b><small>归纳结论与证据链</small></span><em>63.2s</em></div>
+                  <div class="run-step"><span class="tick"><svg class="ico"><use href="#i-check" /></svg></span><span><b>结构化校验</b><small>字段与引用检查通过</small></span><em>1.1s</em></div>
+                  <div class="run-step"><span class="tick"><svg class="ico"><use href="#i-check" /></svg></span><span><b>写入结果库</b><small>生成可追溯记录</small></span><em>2.7s</em></div>
+                </div>
+                <div class="run-output">
+                  <small>FINAL OUTPUT</small>
+                  <p>情报简报已生成：包含 6 条来源、3 个关键结论、风险提示和下一步建议。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="split split--reverse">
+            <div class="selection-mock" aria-label="编辑副驾受控修改示意">
+              <div class="sel-toolbar"><i></i><i></i><i></i><span style="margin-left:8px">编辑副驾 · 选区模式</span></div>
+              <div class="sel-canvas">
+                <div class="sel-zone"><span>当前选区 · 3 个节点</span></div>
+                <div class="sel-node selected" style="left:28px;top:34px"><b>开始</b><small>用户输入</small></div>
+                <div class="sel-node selected" style="left:148px;top:64px"><b>规则检索</b><small>平台规则</small></div>
+                <div class="sel-node selected" style="left:148px;top:164px"><b>回复起草</b><small>给客户的答复</small></div>
+                <div class="sel-node" style="left:286px;top:116px"><b>输出</b><small>最终结果</small></div>
+                <div class="sel-bubble"><b>AI · 修改方案</b>只调整选中的 3 个节点：加入订单号校验，并把回复语气改为更简洁。</div>
+              </div>
+            </div>
+            <div class="split-copy">
+              <span class="eyebrow">Scoped copilot</span>
+              <h2>AI 改图，<br />但不乱改。</h2>
+              <p class="lead">
+                副驾先读整张图，只写你选中的区域。改动前给方案，放手模式失败会回滚；
+                修改记录进入版本历史，下一次保存仍然可追溯。
+              </p>
+              <ul class="check-list">
+                <li><svg class="ico"><use href="#i-check" /></svg>读全图、写选区：范围外节点只读</li>
+                <li><svg class="ico"><use href="#i-check" /></svg>放手执行 / 需要确认两种模式</li>
+                <li><svg class="ico"><use href="#i-check" /></svg>改动前后都试跑，失败自动回滚</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="templates">
+        <div class="container">
+          <div class="section-head">
+            <span class="eyebrow">Start from a template</span>
+            <h2>从一个能跑的模板开始。</h2>
+            <p class="lead">
+              不用面对空白画布。打开一个真实工作流，看节点怎么连、提示词怎么写、结果怎么落库，
+              再改成自己的版本。
+            </p>
+          </div>
+          <div class="template-grid">
+            <a class="template-card" href="/app">
+              <div class="template-art"><span class="mini-edge x1"></span><span class="mini-edge x2"></span><span class="mini-edge x3"></span><span class="mini-edge x4"></span><span class="mini-node m1"></span><span class="mini-node m2"></span><span class="mini-node m3"></span><span class="mini-node m4"></span></div>
+              <span class="template-meta">Flagship · 42 nodes</span>
+              <h3>情报雷达</h3>
+              <p>联网采集、信息归纳、结构化校验和写库，一条完整的调研流水线。</p>
+              <span class="template-foot">打开模板 <svg class="ico"><use href="#i-arrow" /></svg></span>
+            </a>
+            <a class="template-card" href="/app">
+              <div class="template-art"><span class="mini-edge x1"></span><span class="mini-edge x2"></span><span class="mini-edge x3"></span><span class="mini-edge x4"></span><span class="mini-node m1"></span><span class="mini-node m2"></span><span class="mini-node m3"></span><span class="mini-node m4"></span></div>
+              <span class="template-meta">Multi-agent · 19 nodes</span>
+              <h3>并行 Agent 评审</h3>
+              <p>多个 Agent 并行工作，最后汇总成一份可执行的评审结论。</p>
+              <span class="template-foot">打开模板 <svg class="ico"><use href="#i-arrow" /></svg></span>
+            </a>
+            <a class="template-card" href="/app">
+              <div class="template-art"><span class="mini-edge x1"></span><span class="mini-edge x2"></span><span class="mini-edge x3"></span><span class="mini-edge x4"></span><span class="mini-node m1"></span><span class="mini-node m2"></span><span class="mini-node m3"></span><span class="mini-node m4"></span></div>
+              <span class="template-meta">Business · 18 nodes</span>
+              <h3>电商售后处理</h3>
+              <p>收集订单信息、查证平台规则、起草回复，覆盖一次售后闭环。</p>
+              <span class="template-foot">打开模板 <svg class="ico"><use href="#i-arrow" /></svg></span>
+            </a>
+            <a class="template-card" href="/app">
+              <div class="template-art"><span class="mini-edge x1"></span><span class="mini-edge x2"></span><span class="mini-edge x3"></span><span class="mini-edge x4"></span><span class="mini-node m1"></span><span class="mini-node m2"></span><span class="mini-node m3"></span><span class="mini-node m4"></span></div>
+              <span class="template-meta">Engineering · 12 nodes</span>
+              <h3>安全审计 Agent</h3>
+              <p>扫描代码、定位风险、给出修复建议，适合放进研发流程。</p>
+              <span class="template-foot">打开模板 <svg class="ico"><use href="#i-arrow" /></svg></span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--tint">
+        <div class="container">
+          <div class="section-head">
+            <span class="eyebrow">Use cases</span>
+            <h2>同一个工作台，<br />装得下不同团队的工作。</h2>
+            <p class="lead">模板是起点。真正的工作流，通常从“我们团队每周都要做一次”开始。</p>
+          </div>
+          <div class="use-grid">
+            <article class="use-card">
+              <span class="use-icon"><svg class="ico"><use href="#i-search" /></svg></span>
+              <h3>研究与情报</h3>
+              <p>从多源检索到结论，保留来源、证据链和下一步建议。</p>
+              <ul class="use-list"><li>竞品与行业调研</li><li>多来源交叉验证</li><li>结构化简报输出</li></ul>
+            </article>
+            <article class="use-card">
+              <span class="use-icon"><svg class="ico"><use href="#i-db" /></svg></span>
+              <h3>电商与客服</h3>
+              <p>把订单、规则和回复话术串起来，减少重复查证和手工起草。</p>
+              <ul class="use-list"><li>售后纠纷处理</li><li>平台规则检索</li><li>客户回复生成</li></ul>
+            </article>
+            <article class="use-card">
+              <span class="use-icon"><svg class="ico"><use href="#i-code" /></svg></span>
+              <h3>研发与安全</h3>
+              <p>让 Agent 读代码、查风险、提修复建议，把审查过程留痕。</p>
+              <ul class="use-list"><li>代码安全审计</li><li>依赖与配置检查</li><li>修复方案生成</li></ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="security" id="security">
+        <div class="container">
+          <div class="security-panel">
+            <span class="eyebrow">Public demo · explicit boundaries</span>
+            <h2>公开演示，<br />也能把边界说清楚。</h2>
+            <p class="lead">
+              这是一个可以直接打开的在线演示，不是无限制的生产环境。
+              我们把人机验证、匿名额度、只读节点和数据隔离放在明面上。
+            </p>
+            <div class="security-grid">
+              <div class="security-item"><svg class="ico"><use href="#i-shield" /></svg><b>人机验证</b><span>Turnstile 优先，国内网络可走 PoW 备用验证。</span></div>
+              <div class="security-item"><svg class="ico"><use href="#i-spark" /></svg><b>匿名额度</b><span>每位访客每天 3 次 AI、2 次运行、50k tokens。</span></div>
+              <div class="security-item"><svg class="ico"><use href="#i-code" /></svg><b>Code 只读</b><span>公开演示禁用代码执行，旗舰图只展示不运行。</span></div>
+              <div class="security-item"><svg class="ico"><use href="#i-lock" /></svg><b>数据分离</b><span>公开数据独立存放，设置/导出/删除仅管理员可用。</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="faq">
+        <div class="container">
+          <div class="section-head section-head--center">
+            <span class="eyebrow">FAQ</span>
+            <h2>开始之前，你可能想知道。</h2>
+          </div>
+          <div class="faq">
+            <details open>
+              <summary>需要注册或登录吗？</summary>
+              <p>不需要。公开演示只需要通过一次人机验证，就可以直接打开编辑器。演示数据是共享的，请不要输入隐私内容。</p>
+            </details>
+            <details>
+              <summary>可以运行 Code 节点吗？</summary>
+              <p>公开演示出于安全考虑禁用了代码执行。含 Code 的模板可以完整查看，但 Run/Save 会禁用；本机私有部署可以开启完整能力。</p>
+            </details>
+            <details>
+              <summary>每人每天能用多少？</summary>
+              <p>匿名访客每天 3 次 AI 生成、2 次运行、50,000 tokens；同一 IP 还有一层更高上限的兜底额度。额度每天 UTC 零点重置，页面顶栏会显示剩余次数。</p>
+            </details>
+            <details>
+              <summary>我的工作流会被别人看到吗？</summary>
+              <p>公开演示为了让大家直接体验，工作流数据是共享的。删除、导入、导出和设置只对管理员开放；如果需要完全私有，请使用本机部署或私有服务器。</p>
+            </details>
+            <details>
+              <summary>支持哪些模型和工具？</summary>
+              <p>当前演示使用 DeepSeek，并内置联网搜索、HTTP 请求、数据库查询、文本处理等工具。工作流里也可以配置模型、工具和节点参数。</p>
+            </details>
+            <details>
+              <summary>可以自己部署吗？</summary>
+              <p>可以。项目是 FastAPI + LangGraph + React Flow，支持本机开发、独立数据目录和 Cloudflare Tunnel 公网演示。本机模式没有公开演示的额度与只读限制。</p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section class="final-cta">
+        <div class="container">
+          <div class="cta-panel">
+            <div class="cta-copy">
+              <h2>把下一个 Agent，<br />画出来。</h2>
+              <p>无需账号，先打开一个模板；顺手了，再改成你自己的。</p>
+            </div>
+            <div class="cta-actions">
+              <a class="btn btn-light" href="/app">打开在线演示 <svg class="ico"><use href="#i-arrow" /></svg></a>
+              <a class="btn btn-ghost" href="#templates" style="color:#fff;border-color:rgba(255,255,255,.35)">浏览模板</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span>Agent Scaffold</span></a>
+            <p>可视化 AI Agent 工作流编辑器。画布、AI 生成、真实运行和版本历史，在一个界面里。</p>
+          </div>
+          <nav class="footer-links" aria-label="页脚导航">
+            <a href="#product">产品能力</a>
+            <a href="#showcase">运行方式</a>
+            <a href="#templates">模板</a>
+            <a href="#security">安全边界</a>
+            <a href="#faq">常见问题</a>
+            <a href="/app">打开演示</a>
+          </nav>
+        </div>
+        <div class="footer-bottom">
+          <span>© 2026 Agent Scaffold. Public demo · shared data.</span>
+          <span>FastAPI · LangGraph · React Flow · DeepSeek</span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
