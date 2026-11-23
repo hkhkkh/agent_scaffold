@@ -1,89 +1,130 @@
-# Agent Scaffold
+<p align="center">
+  <img src="docs/assets/screenshots/01-home.png" alt="Agent Scaffold — 首页" width="900" />
+</p>
 
-[![CI](https://github.com/hkhkkh/agent_scaffold/actions/workflows/ci.yml/badge.svg)](https://github.com/hkhkkh/agent_scaffold/actions/workflows/ci.yml)
-![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
+<h1 align="center">Agent Scaffold</h1>
 
-> **Visual AI-agent workflow platform** — 在画布上搭 AI Agent 工作流，编译成可执行图。
-> 并发、预算、故障隔离、记忆、调度各自独立成层。
+<p align="center">
+  <b>在画布上搭 AI Agent 工作流，编译成可执行图。</b><br/>
+  并发 · 预算 · 故障隔离 · 记忆 · 调度，各自独立成层。
+</p>
 
-## 这是什么
+<p align="center">
+  <a href="https://github.com/hkhkkh/agent_scaffold/actions/workflows/ci.yml"><img src="https://github.com/hkhkkh/agent_scaffold/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
+  <a href="https://github.com/hkhkkh/agent_scaffold/releases"><img src="https://img.shields.io/github/v/release/hkhkkh/agent_scaffold?color=success" alt="Release"></a>
+  <img src="https://img.shields.io/badge/python-3.12%2B-blue" alt="Python">
+  <img src="https://img.shields.io/badge/node-20%2B-green" alt="Node">
+  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs welcome"></a>
+</p>
 
-Agent Scaffold 把「画布上的 AI Agent 编排」变成「可编译、可复现、可观测的执行图」：
+<p align="center"><i>A visual AI-agent workflow platform: design on a canvas, compile to an executable graph.
+Concurrency, budget, fault isolation, memory and scheduling are independent layers.</i></p>
 
-- **画布 → 编译**：节点图一次编译，多次运行；图哈希 + 版本锁定保证可复现
-- **执行策略独立**：并发、超时、重试、预算（token/费用）都是独立策略层，不和业务逻辑耦合
-- **故障隔离**：节点级超时/重试/熔断，单节点失败不拖垮整张图
-- **记忆与调度解耦**：memory / scheduling 是可替换的层，而不是散落在节点代码里
-- **运行可观测**：每次 run 有历史、事件流、日志与用量统计
+---
 
-## 架构
+## ✨ 为什么做这个
 
-```
-前端画布 (React + Vite)
-        │  REST / SSE
-        ▼
-FastAPI 后端 ──► 编译器 (canvas → graph)
-        │
-        ▼
-RunManager ──► 调度器 ──► 节点执行器 (LLM / 工具 / 代码节点)
-        │            ├─ 策略层：并发 · 超时 · 重试 · 预算
-        │            └─ 记忆层：memory store
-        ▼
-运行历史 / 事件 / 日志 / 用量
+大多数 Agent 框架把「编排、重试、预算、记忆、并发」揉在节点代码里，跑一次就再也复现不出来。
+Agent Scaffold 把这些拆成独立的层：
+
+- **画布即源码**：节点图是可编译的资产，一次编译、多次运行
+- **可复现**：图哈希 + 版本锁定（runtime / 镜像 digest / 子图版本），同一张图跑出同样的结果
+- **策略外置**：并发、超时、重试、预算都是执行器策略，不是业务代码
+- **故障隔离**：单节点超时/失败/熔断不拖垮整张图
+- **运行可观测**：每次 run 都有事件流、日志、用量与结果
+
+## 📸 界面
+
+| 画布编排 | 节点检查器 |
+|---|---|
+| <img src="docs/assets/screenshots/02-canvas.png" width="420"/> | <img src="docs/assets/screenshots/03-inspector.png" width="420"/> |
+
+| 运行历史 | 结果与 Copilot |
+|---|---|
+| <img src="docs/assets/screenshots/04-history.png" width="420"/> | <img src="docs/assets/screenshots/05-result.png" width="420"/> |
+
+| 内置 Copilot | 首页 |
+|---|---|
+| <img src="docs/assets/screenshots/06-copilot.png" width="420"/> | <img src="docs/assets/screenshots/01-home.png" width="420"/> |
+
+## 🏗 架构
+
+```mermaid
+flowchart TD
+    UI["前端画布<br/>React + Vite"] -->|REST / SSE| API["FastAPI 后端"]
+    API --> COMPILER["编译器<br/>canvas → graph"]
+    COMPILER --> RM["RunManager"]
+    RM --> SCHED["调度器"]
+    SCHED --> NODES["节点执行器<br/>LLM · 工具 · 代码"]
+    RM --> POLICY["策略层<br/>并发 · 超时 · 重试 · 预算"]
+    RM --> MEMORY["记忆层<br/>memory store"]
+    RM --> STORE["运行历史<br/>事件 · 日志 · 用量"]
 ```
 
 详细设计见 [docs/ARCHITECTURE.zh.md](docs/ARCHITECTURE.zh.md)。
 
-## 快速开始
+## 🚀 快速开始
 
-### 后端
+<details open>
+<summary><b>后端（FastAPI）</b></summary>
 
 ```bash
 cd backend
 python -m venv .venv
-# Windows: .venv\Scripts\activate  /  macOS/Linux: source .venv/bin/activate
+# Windows: .venv\Scripts\activate   macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env          # 填入 LLM_BASE_URL / LLM_API_KEY / LLM_MODEL
+cp .env.example .env      # 填 LLM_BASE_URL / LLM_API_KEY / LLM_MODEL
 uvicorn app.main:app --reload --port 8000
 ```
 
-### 前端
+不填 key 也能跑：默认 mock 模式，无网络调用、结果确定，方便先看流程。
+</details>
+
+<details open>
+<summary><b>前端（React + Vite）</b></summary>
 
 ```bash
 cd frontend
 npm install
-npm run dev        # 默认 http://localhost:5173
+npm run dev        # http://localhost:5173
 ```
+</details>
 
-### 测试
+<details>
+<summary><b>测试</b></summary>
 
 ```bash
 cd backend && pytest -q
 cd frontend && npm run test
 ```
+</details>
 
-## 目录结构
+## 🗂 目录结构
 
 ```
-backend/    FastAPI 服务：app/（API、runtime、策略、记忆）、tests/
-frontend/   React + TypeScript 画布与运行界面
-docs/       架构与设计文档
-scripts/    开发/运维脚本
+backend/    FastAPI 服务：app/（API、runtime、策略、记忆、安全）、tests/、migrations/
+frontend/   React + TypeScript 画布、检查器、运行面板、Copilot
+docs/       架构与设计文档、截图
+scripts/    开发与冒烟脚本
 ```
 
-## 配置
+## 🧭 路线图
 
-复制 `.env.example` 为 `.env` 后填写。所有密钥只放在 `.env`，**不要提交到仓库**（`.gitignore` 已覆盖）。
+- [x] 画布编排 → 编译执行
+- [x] 运行历史 / 事件 / 用量
+- [x] 预算、超时、重试、故障隔离
+- [x] 内置 Copilot（生成 / 改图 / 解释）
+- [ ] 更多节点类型与能力包
+- [ ] 多租户与团队协作
+- [ ] 可视化评测与回归
 
-## 状态
+## 🤝 贡献
 
-- `v0.1.0` — 首个公开版本：画布编排、编译运行、运行历史、预算与重试策略。
-- 路线图见 [docs/target/](docs/target/)。
+欢迎 issue 和 PR，规则见 [CONTRIBUTING.md](CONTRIBUTING.md)。
+安全问题请按 [SECURITY.md](SECURITY.md) 私信报告，不要开公开 issue。
+如果这个项目对你有用，点个 ⭐ 就是最大的支持。
 
-## 贡献
-
-欢迎 issue 和 PR，见 [CONTRIBUTING.md](CONTRIBUTING.md)。安全问题请按 [SECURITY.md](SECURITY.md) 报告。
-
-## 许可证
+## 📄 许可证
 
 [MIT](LICENSE)
