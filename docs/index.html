@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agent Scaffold — 可视化 AI Agent 工作流平台</title>
+<meta name="description" content="在画布上搭 AI Agent 工作流，编译成可执行图。并发、预算、故障隔离、记忆、调度各自独立成层。" />
+<style>
+  :root { --bg:#0b0e14; --panel:#121722; --line:#1f2635; --text:#e6e9ef; --muted:#93a0b4; --accent:#6ea8fe; --accent2:#8f7bff; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:radial-gradient(1200px 600px at 50% -200px, #1a2440 0%, var(--bg) 60%); color:var(--text);
+         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; line-height:1.6; }
+  a { color:var(--accent); text-decoration:none; }
+  .wrap { max-width:1080px; margin:0 auto; padding:0 24px; }
+  header.hero { padding:72px 0 40px; text-align:center; }
+  .tag { display:inline-block; padding:6px 12px; border:1px solid var(--line); border-radius:999px; color:var(--muted); font-size:13px; }
+  h1 { font-size:52px; margin:20px 0 8px; letter-spacing:-0.02em; background:linear-gradient(90deg,#fff,#9db7ff 60%,#b7a4ff);
+       -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .sub { color:var(--muted); font-size:18px; max-width:720px; margin:0 auto 28px; }
+  .cta { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:36px; }
+  .btn { padding:12px 22px; border-radius:10px; border:1px solid var(--line); color:var(--text); background:var(--panel); font-weight:600; }
+  .btn.primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); border:none; color:#08101f; }
+  .shot { border:1px solid var(--line); border-radius:16px; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,.5); }
+  .shot img { width:100%; display:block; }
+  section { padding:64px 0; border-top:1px solid var(--line); }
+  h2 { font-size:28px; margin:0 0 8px; text-align:center; }
+  .lead { color:var(--muted); text-align:center; margin:0 0 40px; }
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:22px; }
+  .card h3 { margin:0 0 8px; font-size:17px; }
+  .card p { margin:0; color:var(--muted); font-size:14px; }
+  .gallery { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+  .gallery img { width:100%; border:1px solid var(--line); border-radius:12px; display:block; }
+  pre { background:#0d1119; border:1px solid var(--line); border-radius:12px; padding:18px; overflow:auto; font-size:13.5px; color:#c9d4e5; }
+  footer { padding:48px 0 72px; text-align:center; color:var(--muted); font-size:14px; border-top:1px solid var(--line); }
+  @media (max-width:860px){ h1{font-size:36px;} .grid{grid-template-columns:1fr;} .gallery{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <span class="tag">MIT · Open Source · v0.1.0</span>
+    <h1>Agent Scaffold</h1>
+    <p class="sub">在画布上搭 AI Agent 工作流，编译成可执行图。<br/>并发、预算、故障隔离、记忆、调度，各自独立成层。</p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/hkhkkh/agent_scaffold">GitHub 仓库</a>
+      <a class="btn" href="https://github.com/hkhkkh/agent_scaffold/releases">下载 v0.1.0</a>
+      <a class="btn" href="https://github.com/hkhkkh/agent_scaffold#-快速开始">快速开始</a>
+    </div>
+    <div class="shot"><img src="assets/screenshots/01-home.png" alt="Agent Scaffold 首页" /></div>
+  </header>
+
+  <section>
+    <h2>为什么是 Agent Scaffold</h2>
+    <p class="lead">把「编排、重试、预算、记忆、并发」从节点代码里拆出来</p>
+    <div class="grid">
+      <div class="card"><h3>画布即源码</h3><p>节点图是可编译的资产：一次编译、多次运行，版本可锁定。</p></div>
+      <div class="card"><h3>可复现</h3><p>图哈希 + runtime / 镜像 digest / 子图版本锁定，同一张图跑出同样结果。</p></div>
+      <div class="card"><h3>策略外置</h3><p>并发、超时、重试、预算都是执行器策略，不污染业务逻辑。</p></div>
+      <div class="card"><h3>故障隔离</h3><p>单节点超时、失败、熔断不拖垮整张图。</p></div>
+      <div class="card"><h3>运行可观测</h3><p>每次 run 都有事件流、日志、用量与最终结果。</p></div>
+      <div class="card"><h3>内置 Copilot</h3><p>用自然语言生成、修改、解释工作流图。</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>界面</h2>
+    <p class="lead">画布 · 检查器 · 运行历史 · Copilot</p>
+    <div class="gallery">
+      <img src="assets/screenshots/02-canvas.png" alt="画布编排" />
+      <img src="assets/screenshots/03-inspector.png" alt="节点检查器" />
+      <img src="assets/screenshots/04-history.png" alt="运行历史" />
+      <img src="assets/screenshots/06-copilot.png" alt="Copilot" />
+    </div>
+  </section>
+
+  <section>
+    <h2>快速开始</h2>
+    <p class="lead">后端 FastAPI，前端 React + Vite</p>
+    <pre><code># 后端
+cd backend
+python -m venv .venv &amp;&amp; pip install -r requirements.txt
+cp .env.example .env        # 填 LLM_BASE_URL / LLM_API_KEY
+uvicorn app.main:app --reload --port 8000
+
+# 前端
+cd frontend
+npm install &amp;&amp; npm run dev  # http://localhost:5173</code></pre>
+  </section>
+
+  <footer>
+    <p>MIT License · Made by <a href="https://github.com/hkhkkh">hkhkkh</a></p>
+    <p><a href="https://github.com/hkhkkh/agent_scaffold">GitHub</a> · <a href="https://github.com/hkhkkh/agent_scaffold/blob/main/CONTRIBUTING.md">贡献指南</a> · <a href="ARCHITECTURE.zh.md">架构文档</a></p>
+  </footer>
+</div>
+</body>
+</html>
