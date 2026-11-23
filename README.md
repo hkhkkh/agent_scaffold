@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://github.com/hkhkkh/agent_scaffold/actions/workflows/ci.yml"><img src="https://github.com/hkhkkh/agent_scaffold/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
-  <a href="https://github.com/hkhkkh/agent_scaffold/releases"><img src="https://img.shields.io/github/v/release/hkhkkh/agent_scaffold?color=success" alt="Release"></a>
+  <a href="https://hkhkkh.github.io/agent_scaffold/"><img src="https://img.shields.io/badge/%E5%AE%98%E7%BD%91-Landing%20Page-6ea8fe" alt="Landing page"></a>`n  <a href="https://github.com/hkhkkh/agent_scaffold/releases"><img src="https://img.shields.io/github/v/release/hkhkkh/agent_scaffold?color=success" alt="Release"></a>
   <img src="https://img.shields.io/badge/python-3.12%2B-blue" alt="Python">
   <img src="https://img.shields.io/badge/node-20%2B-green" alt="Node">
   <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs welcome"></a>
@@ -128,3 +128,4 @@ scripts/    开发与冒烟脚本
 ## 📄 许可证
 
 [MIT](LICENSE)
+
