@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 260" width="100%" role="img" aria-label="独立导出仓库与 SHA-256 封条验证">
+  <defs>
+    <linearGradient id="exBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070e1b"/>
+      <stop offset="100%" stop-color="#0c182c"/>
+    </linearGradient>
+    <filter id="exGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="2.4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <style>
+      .mono { font-family: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace; }
+      .sans { font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+      .sealLine { stroke-dasharray: 7 6; animation: sflow 2.1s linear infinite; }
+      @keyframes sflow { to { stroke-dashoffset: -39; } }
+    </style>
+  </defs>
+
+  <rect x="1" y="1" width="1118" height="258" rx="14" fill="url(#exBg)" stroke="#1d3557" stroke-width="1.4"/>
+  <text x="24" y="30" fill="#f5a623" font-size="11.5" font-weight="700" class="mono">STANDALONE EXPORT // 49/49 WHEEL SHA-256 SEAL &amp; CLI MODES</text>
+
+  <!-- Left: Exported Repo Structure -->
+  <g transform="translate(24, 48)">
+    <rect x="0" y="0" width="380" height="190" rx="10" fill="#091324" stroke="#22426e"/>
+    <text x="16" y="26" fill="#18d8f0" font-size="12" font-weight="700" class="mono">my-agent/ (零画布依赖)</text>
+    <text x="16" y="52" fill="#d9e7fa" font-size="12" class="mono">├── agent.yaml      <tspan fill="#8ea6c7"># !ref 外置图</tspan></text>
+    <text x="16" y="74" fill="#d9e7fa" font-size="12" class="mono">├── agent.lock      <tspan fill="#f5a623"># 图与运行时哈希</tspan></text>
+    <text x="16" y="96" fill="#d9e7fa" font-size="12" class="mono">├── prompts/ code/  <tspan fill="#8ea6c7"># 可单测可 IDE 查</tspan></text>
+    <text x="16" y="118" fill="#d9e7fa" font-size="12" class="mono">├── vendor/         <tspan fill="#18d8f0"># 49/49 离线 whl</tspan></text>
+    <text x="16" y="140" fill="#d9e7fa" font-size="12" class="mono">├── requirements.txt<tspan fill="#8cf0ff"># --require-hashes</tspan></text>
+    <text x="16" y="162" fill="#d9e7fa" font-size="12" class="mono">└── main.py         <tspan fill="#8ea6c7"># CLI + 对话前端</tspan></text>
+  </g>
+
+  <!-- Beam -->
+  <line x1="404" y1="143" x2="466" y2="143" stroke="#1e3c66" stroke-width="3"/>
+  <line x1="404" y1="143" x2="466" y2="143" stroke="#f5a623" stroke-width="2" class="sealLine"/>
+  <circle r="4.5" fill="#f5a623" filter="url(#exGlow)">
+    <animateMotion dur="1.5s" repeatCount="indefinite" path="M 404 143 L 466 143"/>
+  </circle>
+
+  <!-- Right: CLI & Seal Verification -->
+  <g transform="translate(466, 48)">
+    <rect x="0" y="0" width="630" height="190" rx="10" fill="#091324" stroke="#22426e"/>
+    <text x="16" y="26" fill="#89dceb" font-size="11.5" font-weight="700" class="mono">$ pip install --no-index --find-links vendor --require-hashes -r requirements.txt</text>
+    <rect x="16" y="40" width="598" height="32" rx="6" fill="#0d2a38" stroke="#18d8f0" stroke-opacity="0.5"/>
+    <text x="28" y="61" fill="#18d8f0" font-size="12" font-weight="700" class="mono">✓ PASS: 49/49 WHEELS VERIFIED · 篡改任意 1 字节即报错中止安装</text>
+
+    <!-- 4 CLI Mode pills -->
+    <g transform="translate(16, 86)">
+      <rect x="0" y="0" width="142" height="86" rx="7" fill="#0f1d35" stroke="#264a78"/>
+      <text x="12" y="24" fill="#18d8f0" font-size="12.5" font-weight="700" class="mono">run</text>
+      <text x="12" y="46" fill="#eef5ff" font-size="12" class="sans">单次 CLI 批处理</text>
+      <text x="12" y="68" fill="#8ea6c7" font-size="10.5" class="mono">exit 0 / __output__</text>
+    </g>
+    <g transform="translate(168, 86)">
+      <rect x="0" y="0" width="142" height="86" rx="7" fill="#0f1d35" stroke="#264a78"/>
+      <text x="12" y="24" fill="#38bdf8" font-size="12.5" font-weight="700" class="mono">serve --http</text>
+      <text x="12" y="46" fill="#eef5ff" font-size="12" class="sans">独立对话服务 + UI</text>
+      <text x="12" y="68" fill="#8ea6c7" font-size="10.5" class="mono">SSE + sessions.db</text>
+    </g>
+    <g transform="translate(320, 86)">
+      <rect x="0" y="0" width="142" height="86" rx="7" fill="#0f1d35" stroke="#264a78"/>
+      <text x="12" y="24" fill="#f5a623" font-size="12.5" font-weight="700" class="mono">daemon</text>
+      <text x="12" y="46" fill="#eef5ff" font-size="12" class="sans">常驻产线周期守护</text>
+      <text x="12" y="68" fill="#8ea6c7" font-size="10.5" class="mono">单实例锁 + 日报</text>
+    </g>
+    <g transform="translate(472, 86)">
+      <rect x="0" y="0" width="142" height="86" rx="7" fill="#0f1d35" stroke="#264a78"/>
+      <text x="12" y="24" fill="#ff5c7c" font-size="12.5" font-weight="700" class="mono">selfcheck</text>
+      <text x="12" y="46" fill="#eef5ff" font-size="12" class="sans">自检与依赖诊断</text>
+      <text x="12" y="68" fill="#8ea6c7" font-size="10.5" class="mono">doctor + lock 校验</text>
+    </g>
+  </g>
+</svg>

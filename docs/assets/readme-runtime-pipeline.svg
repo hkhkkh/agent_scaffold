@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 220" width="100%" role="img" aria-label="Agent Scaffold 运行时五层独立治理管线">
+  <defs>
+    <linearGradient id="pipeBg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#08101e"/>
+      <stop offset="50%" stop-color="#0d1a30"/>
+      <stop offset="100%" stop-color="#08101e"/>
+    </linearGradient>
+    <filter id="pGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="2.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <style>
+      .mono { font-family: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace; }
+      .sans { font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+      .busFlow { stroke-dasharray: 10 8; animation: bflow 2s linear infinite; }
+      @keyframes bflow { to { stroke-dashoffset: -36; } }
+    </style>
+  </defs>
+
+  <rect x="1" y="1" width="1118" height="218" rx="14" fill="url(#pipeBg)" stroke="#1d3557" stroke-width="1.4"/>
+  <text x="24" y="28" fill="#89dceb" font-size="11" font-weight="700" class="mono">RUNTIME TELEMETRY BUS // CONCURRENCY · FAULT ISOLATION · BUDGET · MEMORY · SECURITY</text>
+
+  <!-- Central Telemetry Bus Line -->
+  <line x1="40" y1="112" x2="1080" y2="112" stroke="#183254" stroke-width="3"/>
+  <line x1="40" y1="112" x2="1080" y2="112" stroke="#18d8f0" stroke-width="1.6" class="busFlow"/>
+  <circle r="4.5" fill="#18d8f0" filter="url(#pGlow)">
+    <animateMotion dur="3.4s" repeatCount="indefinite" path="M 40 112 L 1080 112"/>
+  </circle>
+  <circle r="4" fill="#f5a623" filter="url(#pGlow)">
+    <animateMotion dur="3.4s" begin="1.7s" repeatCount="indefinite" path="M 40 112 L 1080 112"/>
+  </circle>
+
+  <!-- 5 Runtime Pillar Cards -->
+  <g transform="translate(24, 52)">
+    <rect x="0" y="0" width="200" height="142" rx="10" fill="#0d192e" stroke="#264a78" stroke-width="1.2"/>
+    <rect x="0" y="0" width="200" height="4" rx="2" fill="#18d8f0"/>
+    <text x="14" y="28" fill="#18d8f0" font-size="11" font-weight="700" class="mono">01 / CONCURRENCY</text>
+    <text x="14" y="52" fill="#eef5ff" font-size="15" font-weight="700" class="sans">并发队列与调度</text>
+    <text x="14" y="76" fill="#9ab0cf" font-size="11.5" class="sans">FIFO 排队 · 上限护栏</text>
+    <text x="14" y="96" fill="#9ab0cf" font-size="11.5" class="sans">APScheduler 定时唤醒</text>
+    <text x="14" y="122" fill="#7ce0cf" font-size="10.5" class="mono">Webhook 盲态 404 防探</text>
+  </g>
+
+  <g transform="translate(242, 52)">
+    <rect x="0" y="0" width="200" height="142" rx="10" fill="#0d192e" stroke="#264a78" stroke-width="1.2"/>
+    <rect x="0" y="0" width="200" height="4" rx="2" fill="#38bdf8"/>
+    <text x="14" y="28" fill="#38bdf8" font-size="11" font-weight="700" class="mono">02 / FAULT ISOLATION</text>
+    <text x="14" y="52" fill="#eef5ff" font-size="15" font-weight="700" class="sans">故障隔离与重试</text>
+    <text x="14" y="76" fill="#9ab0cf" font-size="11.5" class="sans">stop / continue / default</text>
+    <text x="14" y="96" fill="#9ab0cf" font-size="11.5" class="sans">节点超时 120s + 指数退避</text>
+    <text x="14" y="122" fill="#89dceb" font-size="10.5" class="mono">单点崩溃不拖垮整图</text>
+  </g>
+
+  <g transform="translate(460, 52)">
+    <rect x="0" y="0" width="200" height="142" rx="10" fill="#0d192e" stroke="#264a78" stroke-width="1.2"/>
+    <rect x="0" y="0" width="200" height="4" rx="2" fill="#f5a623"/>
+    <text x="14" y="28" fill="#f5a623" font-size="11" font-weight="700" class="mono">03 / BUDGET BREAKER</text>
+    <text x="14" y="52" fill="#eef5ff" font-size="15" font-weight="700" class="sans">预算熔断与可观测</text>
+    <text x="14" y="76" fill="#9ab0cf" font-size="11.5" class="sans">warn 告警 / stop 提前熔断</text>
+    <text x="14" y="96" fill="#9ab0cf" font-size="11.5" class="sans">熔断状态 stopped 保留产出</text>
+    <text x="14" y="122" fill="#f8c978" font-size="10.5" class="mono">全量 SSE + 用量审计</text>
+  </g>
+
+  <g transform="translate(678, 52)">
+    <rect x="0" y="0" width="200" height="142" rx="10" fill="#0d192e" stroke="#264a78" stroke-width="1.2"/>
+    <rect x="0" y="0" width="200" height="4" rx="2" fill="#38bdf8"/>
+    <text x="14" y="28" fill="#38bdf8" font-size="11" font-weight="700" class="mono">04 / MEMORY &amp; PACKS</text>
+    <text x="14" y="52" fill="#eef5ff" font-size="15" font-weight="700" class="sans">记忆目标与能力包</text>
+    <text x="14" y="76" fill="#9ab0cf" font-size="11.5" class="sans">跨 Run 长期记忆 &amp; Goals</text>
+    <text x="14" y="96" fill="#9ab0cf" font-size="11.5" class="sans">files 能力包 10 种文档工具</text>
+    <text x="14" y="122" fill="#89dceb" font-size="10.5" class="mono">allow/deny/approval 三态</text>
+  </g>
+
+  <g transform="translate(896, 52)">
+    <rect x="0" y="0" width="200" height="142" rx="10" fill="#0d192e" stroke="#264a78" stroke-width="1.2"/>
+    <rect x="0" y="0" width="200" height="4" rx="2" fill="#ff5c7c"/>
+    <text x="14" y="28" fill="#ff5c7c" font-size="11" font-weight="700" class="mono">05 / SECURITY GUARD</text>
+    <text x="14" y="52" fill="#eef5ff" font-size="15" font-weight="700" class="sans">安全沙盒与防泄露</text>
+    <text x="14" y="76" fill="#9ab0cf" font-size="11.5" class="sans">Docker / 子进程沙盒隔离</text>
+    <text x="14" y="96" fill="#9ab0cf" font-size="11.5" class="sans">SSRF 出网校验 &amp; 凭据脱敏</text>
+    <text x="14" y="122" fill="#ff9fb2" font-size="10.5" class="mono">PoW / Turnstile 公网门禁</text>
+  </g>
+</svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 26" width="100%" role="presentation">
+  <defs>
+    <linearGradient id="divGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0d1a30" stop-opacity="0"/>
+      <stop offset="25%" stop-color="#18d8f0" stop-opacity="0.7"/>
+      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.95"/>
+      <stop offset="75%" stop-color="#f5a623" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#0d1a30" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="dGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <line x1="20" y1="13" x2="1100" y2="13" stroke="url(#divGrad)" stroke-width="1.5"/>
+  <polygon points="552,13 560,7 568,13 560,19" fill="#18d8f0" filter="url(#dGlow)">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="2.2s" repeatCount="indefinite"/>
+  </polygon>
+  <circle r="3" fill="#18d8f0" filter="url(#dGlow)">
+    <animateMotion dur="4s" repeatCount="indefinite" path="M 30 13 L 1090 13"/>
+  </circle>
+  <circle r="2.5" fill="#f5a623" filter="url(#dGlow)">
+    <animateMotion dur="4s" begin="2s" repeatCount="indefinite" path="M 1090 13 L 30 13"/>
+  </circle>
+</svg>

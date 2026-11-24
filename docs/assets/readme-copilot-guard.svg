@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 260" width="100%" role="img" aria-label="AI Copilot Diff 预览与三重防删光护栏">
+  <defs>
+    <linearGradient id="cpBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070e1b"/>
+      <stop offset="100%" stop-color="#0d192e"/>
+    </linearGradient>
+    <filter id="cpGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="2.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <style>
+      .mono { font-family: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace; }
+      .sans { font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+      .beam { stroke-dasharray: 8 6; animation: cflow 2s linear infinite; }
+      @keyframes cflow { to { stroke-dashoffset: -42; } }
+    </style>
+  </defs>
+
+  <rect x="1" y="1" width="1118" height="258" rx="14" fill="url(#cpBg)" stroke="#1d3557" stroke-width="1.4"/>
+  <text x="24" y="30" fill="#18d8f0" font-size="11.5" font-weight="700" class="mono">AI BUILD-TIME COPILOT // DIFF-FIRST WORKFLOW &amp; ANTI-STRIP GUARDRAILS</text>
+
+  <!-- Left: Diff Preview Panel -->
+  <g transform="translate(24, 48)">
+    <rect x="0" y="0" width="540" height="190" rx="10" fill="#091324" stroke="#22426e" stroke-width="1.2"/>
+    <rect x="0" y="0" width="540" height="30" rx="10" fill="#0f203b"/>
+    <text x="14" y="20" fill="#9bc5f2" font-size="11" font-weight="700" class="mono">PREVIEW OVERLAY · PATCH_DIFF.JSON</text>
+    <text x="412" y="20" fill="#18d8f0" font-size="10.5" font-weight="700" class="mono">ACCEPT / REJECT</text>
+
+    <rect x="14" y="42" width="512" height="32" rx="5" fill="#0d2a38" stroke="#18d8f0" stroke-opacity="0.45"/>
+    <text x="24" y="62" fill="#8cf0ff" font-size="11.5" class="mono">+ add_node(id="branch_risk", type="condition")</text>
+
+    <rect x="14" y="82" width="512" height="32" rx="5" fill="#291f10" stroke="#f5a623" stroke-opacity="0.45"/>
+    <text x="24" y="102" fill="#ffd992" font-size="11.5" class="mono">~ set_policy(node="api_1", on_error="default")</text>
+
+    <rect x="14" y="122" width="512" height="32" rx="5" fill="#2c1220" stroke="#ff5c7c" stroke-opacity="0.5"/>
+    <text x="24" y="142" fill="#ffa3b5" font-size="11.5" class="mono">✕ BLOCKED: delete_node("llm_core") — 护栏拦截删除逃逸</text>
+
+    <text x="16" y="176" fill="#8ea6c7" font-size="11" class="sans">所有生图 / 修图 / 补参均先生成 Diff 覆盖层，绝不静默篡改画布</text>
+  </g>
+
+  <!-- Connecting Beam -->
+  <line x1="564" y1="143" x2="626" y2="143" stroke="#1e3c66" stroke-width="3"/>
+  <line x1="564" y1="143" x2="626" y2="143" stroke="#18d8f0" stroke-width="2" class="beam"/>
+  <circle r="4.5" fill="#18d8f0" filter="url(#cpGlow)">
+    <animateMotion dur="1.4s" repeatCount="indefinite" path="M 564 143 L 626 143"/>
+  </circle>
+
+  <!-- Right: 3 Guardrail Shields -->
+  <g transform="translate(626, 48)">
+    <rect x="0" y="0" width="470" height="190" rx="10" fill="#091324" stroke="#22426e" stroke-width="1.2"/>
+    <text x="16" y="26" fill="#f5a623" font-size="11.5" font-weight="700" class="mono">TRIPLE GUARDRAILS · 防删光三重护栏 (7/7 PROBED)</text>
+
+    <g transform="translate(16, 42)">
+      <rect x="0" y="0" width="438" height="40" rx="6" fill="#0f1d35" stroke="#18d8f0" stroke-opacity="0.5"/>
+      <circle cx="18" cy="20" r="5" fill="#18d8f0">
+        <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <text x="34" y="25" fill="#eef5ff" font-size="12.5" font-weight="700" class="sans">01 · 完成判据隔离</text>
+      <text x="180" y="25" fill="#8ea6c7" font-size="11.5" class="sans">仅「AI 修复」可见校验错误并逐条收敛</text>
+    </g>
+
+    <g transform="translate(16, 90)">
+      <rect x="0" y="0" width="438" height="40" rx="6" fill="#0f1d35" stroke="#38bdf8" stroke-opacity="0.5"/>
+      <circle cx="18" cy="20" r="5" fill="#38bdf8">
+        <animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="0.6s" repeatCount="indefinite"/>
+      </circle>
+      <text x="34" y="25" fill="#eef5ff" font-size="12.5" font-weight="700" class="sans">02 · 结构性防删光约束</text>
+      <text x="180" y="25" fill="#8ea6c7" font-size="11.5" class="sans">禁止通过删光报错节点欺骗校验器</text>
+    </g>
+
+    <g transform="translate(16, 138)">
+      <rect x="0" y="0" width="438" height="40" rx="6" fill="#0f1d35" stroke="#f5a623" stroke-opacity="0.5"/>
+      <circle cx="18" cy="20" r="5" fill="#f5a623">
+        <animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="1.2s" repeatCount="indefinite"/>
+      </circle>
+      <text x="34" y="25" fill="#eef5ff" font-size="12.5" font-weight="700" class="sans">03 · 信任决策独立可测</text>
+      <text x="180" y="25" fill="#8ea6c7" font-size="11.5" class="sans">7 项护栏反向探针实测通过，改坏即红</text>
+    </g>
+  </g>
+</svg>
