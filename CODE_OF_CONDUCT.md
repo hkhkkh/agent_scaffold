@@ -50,10 +50,9 @@ an appointed representative at an online or offline event.
 
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behaviour may be reported to the project
-maintainers by opening a private report through
-[GitHub Security Advisories](https://github.com/hkhkkh/agent_scaffold/security/advisories/new) or by
-contacting the maintainers listed in the repository profile.
+Instances of abusive, harassing, or otherwise unacceptable behaviour may be reported privately to
+the project maintainers through the contact details on their GitHub profiles. Please do not open a
+public issue to report a Code of Conduct incident.
 
 All complaints will be reviewed and investigated promptly and fairly.
 

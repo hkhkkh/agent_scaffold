@@ -8,9 +8,9 @@ body:
       value: |
         Thanks for taking the time to report a bug. Please search existing issues first.
 
-        Do **not** paste API keys, tokens or `.env` contents. Report security issues privately via
-        [GitHub Security Advisories](https://github.com/hkhkkh/agent_scaffold/security/advisories/new)
-        instead.
+        Do **not** paste API keys, tokens or `.env` contents. Please read
+        [SECURITY.md](https://github.com/hkhkkh/agent_scaffold/blob/main/SECURITY.md) for how to
+        report vulnerabilities privately.
 
   - type: textarea
     id: what-happened
@@ -54,6 +54,12 @@ body:
   - type: textarea
     id: logs
     attributes:
-      label: Logs / screenshots
-      description: Paste relevant logs or drag screenshots here. Remove secrets first.
+      label: Logs
+      description: Paste relevant log output. Remove secrets first.
       render: shell
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Drag screenshots or screen recordings here, if they help explain the bug.
