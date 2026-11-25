@@ -7,7 +7,7 @@ uvicorn[standard]>=0.32.0
 # was a dependency with a CVE surface nobody was tracking.
 
 # ---- Config / validation ----
-pydantic>=2.9.0
+pydantic>=2.14.4
 pydantic-settings>=2.6.0
 
 # ---- Persistence ----
