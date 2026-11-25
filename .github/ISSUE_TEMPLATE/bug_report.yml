@@ -1,0 +1,59 @@
+name: Bug report
+description: Something in Agent Scaffold does not work as expected.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please search existing issues first.
+
+        Do **not** paste API keys, tokens or `.env` contents. Report security issues privately via
+        [GitHub Security Advisories](https://github.com/hkhkkh/agent_scaffold/security/advisories/new)
+        instead.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Backend (FastAPI)
+        - Frontend (React)
+        - Workflow execution / scheduler
+        - Copilot
+        - Docs
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      description: Release tag, `main` commit SHA or container tag.
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / screenshots
+      description: Paste relevant logs or drag screenshots here. Remove secrets first.
+      render: shell
