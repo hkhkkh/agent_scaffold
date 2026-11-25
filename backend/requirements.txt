@@ -1,5 +1,5 @@
 # ---- Web framework ----
-fastapi>=0.115.0
+fastapi>=0.165.0
 uvicorn[standard]>=0.32.0
 # `python-multipart` was declared here and never used: every endpoint takes a
 # JSON body, and nothing imports `Form`, `File`, or `UploadFile`. starlette only
